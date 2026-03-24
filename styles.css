@@ -1442,8 +1442,8 @@ h1, h2, h3, h4 {
 
 /* ========== RESPONSIVE ========== */
 @media (max-width: 1024px) {
-    .research-grid {
-        grid-template-columns: repeat(2, 1fr);
+    .research-card {
+        flex: 0 1 calc(50% - 12px);
     }
 }
 
