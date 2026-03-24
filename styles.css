@@ -517,12 +517,17 @@ h1, h2, h3, h4 {
 }
 
 .research-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: 24px;
+    padding-top: 40px;
+    padding-bottom: 40px;
 }
 
 .research-card {
+    flex: 0 1 calc(33.333% - 16px);
+    min-width: 280px;
     background: var(--white);
     border-radius: var(--radius);
     padding: 36px 28px;
@@ -530,6 +535,23 @@ h1, h2, h3, h4 {
     transition: var(--transition);
     position: relative;
     overflow: hidden;
+}
+
+/* Staggered up-down pattern */
+.research-card:nth-child(odd) {
+    transform: translateY(-20px);
+}
+
+.research-card:nth-child(even) {
+    transform: translateY(20px);
+}
+
+.research-card:nth-child(odd):hover {
+    transform: translateY(-28px);
+}
+
+.research-card:nth-child(even):hover {
+    transform: translateY(12px);
 }
 
 .research-card::before {
@@ -1497,7 +1519,25 @@ h1, h2, h3, h4 {
         padding: 24px;
     }
 
-    .research-grid,
+    .research-card {
+        flex: 0 1 100%;
+    }
+
+    .research-card:nth-child(odd),
+    .research-card:nth-child(even) {
+        transform: translateY(0);
+    }
+
+    .research-card:nth-child(odd):hover,
+    .research-card:nth-child(even):hover {
+        transform: translateY(-4px);
+    }
+
+    .research-grid {
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+
     .product-grid,
     .consult-grid {
         grid-template-columns: 1fr;
