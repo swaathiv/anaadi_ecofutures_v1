@@ -3,21 +3,21 @@
    ======================================== */
 
 :root {
-    --saffron: #FF6B2B;
-    --saffron-dark: #E55A1B;
-    --saffron-light: #FFF3ED;
-    --green: #2D6A4F;
-    --green-dark: #1B4332;
-    --green-light: #D8F3DC;
-    --gold: #D4A843;
+    --saffron: #D4960A;
+    --saffron-dark: #B37E08;
+    --saffron-light: #FDF6E3;
+    --green: #3B6B3A;
+    --green-dark: #2E4E2D;
+    --green-light: #E2F0E2;
+    --gold: #D4960A;
     --gold-light: #FDF6E3;
-    --maroon: #8B1A1A;
-    --cream: #FFF9F0;
-    --earth: #8B7355;
+    --maroon: #5C3D1E;
+    --cream: #F7F5F0;
+    --earth: #6B7B55;
     --text: #2D2D2D;
-    --text-light: #666;
+    --text-light: #5A5A5A;
     --white: #FFFFFF;
-    --border: #E8DFD3;
+    --border: #DDD8CF;
     --shadow: 0 4px 20px rgba(0,0,0,0.08);
     --shadow-lg: 0 8px 40px rgba(0,0,0,0.12);
     --radius: 12px;
@@ -65,14 +65,14 @@ h1, h2, h3, h4 {
     left: 0;
     right: 0;
     z-index: 1000;
-    background: rgba(255, 249, 240, 0.95);
+    background: #42644b;
     backdrop-filter: blur(10px);
-    border-bottom: 2px solid var(--border);
+    border-bottom: 3px solid rgba(212, 150, 10, 0.4);
     transition: var(--transition);
 }
 
 #navbar.scrolled {
-    box-shadow: var(--shadow);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.25);
 }
 
 .nav-container {
@@ -91,22 +91,13 @@ h1, h2, h3, h4 {
     gap: 10px;
     text-decoration: none;
     color: var(--text);
+    flex-shrink: 0;
 }
 
-.logo-icon {
-    font-size: 28px;
-    color: var(--saffron);
-}
-
-.logo-text {
-    font-family: 'Playfair Display', serif;
-    font-size: 22px;
-    font-weight: 700;
-}
-
-.logo-sub {
-    color: var(--green);
-    font-weight: 400;
+.logo-img {
+    width: 180px;
+    height: 66px;
+    object-fit: cover;
 }
 
 .nav-links {
@@ -117,17 +108,17 @@ h1, h2, h3, h4 {
 
 .nav-links a {
     text-decoration: none;
-    color: var(--text);
+    color: rgba(255, 255, 255, 0.85);
     padding: 8px 16px;
     border-radius: var(--radius-sm);
-    font-size: 14px;
+    font-size: 30:px;
     font-weight: 500;
     transition: var(--transition);
 }
 
 .nav-links a:hover {
-    background: var(--saffron-light);
-    color: var(--saffron);
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--gold);
 }
 
 .nav-right {
@@ -139,25 +130,26 @@ h1, h2, h3, h4 {
 .cart-btn {
     position: relative;
     background: none;
-    border: 2px solid var(--border);
+    border: 2px solid rgba(255, 255, 255, 0.25);
     border-radius: var(--radius-sm);
     padding: 8px 12px;
     cursor: pointer;
     font-size: 18px;
     transition: var(--transition);
+    color: white;
 }
 
 .cart-btn:hover {
-    border-color: var(--saffron);
-    background: var(--saffron-light);
+    border-color: var(--gold);
+    background: rgba(255, 255, 255, 0.1);
 }
 
 .cart-count {
     position: absolute;
     top: -6px;
     right: -6px;
-    background: var(--saffron);
-    color: white;
+    background: var(--gold);
+    color: var(--green-dark);
     font-size: 11px;
     font-weight: 600;
     width: 20px;
@@ -182,7 +174,7 @@ h1, h2, h3, h4 {
 .menu-toggle span {
     width: 24px;
     height: 2px;
-    background: var(--text);
+    background: rgba(255, 255, 255, 0.85);
     border-radius: 2px;
     transition: var(--transition);
 }
@@ -195,7 +187,7 @@ h1, h2, h3, h4 {
     align-items: center;
     justify-content: center;
     text-align: center;
-    background: linear-gradient(135deg, #1B4332 0%, #2D6A4F 40%, #40916C 100%);
+    background: linear-gradient(135deg, #1E3A1E 0%, #2E4E2D 40%, #3B6B3A 100%);
     overflow: hidden;
 }
 
@@ -209,8 +201,8 @@ h1, h2, h3, h4 {
     position: absolute;
     inset: 0;
     background:
-        radial-gradient(circle at 20% 80%, rgba(212, 168, 67, 0.15) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(255, 107, 43, 0.1) 0%, transparent 50%);
+        radial-gradient(circle at 20% 80%, rgba(212, 150, 10, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(140, 210, 100, 0.08) 0%, transparent 50%);
 }
 
 .hero-content {
@@ -277,7 +269,7 @@ h1, h2, h3, h4 {
 .btn-primary:hover {
     background: var(--saffron-dark);
     transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(255, 107, 43, 0.4);
+    box-shadow: 0 4px 15px rgba(212, 150, 10, 0.4);
 }
 
 .btn-secondary {
@@ -420,14 +412,14 @@ h1, h2, h3, h4 {
     height: 4px;
     background: repeating-linear-gradient(
         90deg,
-        var(--saffron) 0px,
-        var(--saffron) 20px,
+        var(--gold) 0px,
         var(--gold) 20px,
-        var(--gold) 40px,
+        var(--green) 20px,
         var(--green) 40px,
-        var(--green) 60px,
-        var(--maroon) 60px,
-        var(--maroon) 80px
+        #8BD450 40px,
+        #8BD450 60px,
+        var(--green-dark) 60px,
+        var(--green-dark) 80px
     );
 }
 
@@ -659,7 +651,7 @@ h1, h2, h3, h4 {
     text-align: center;
     margin-top: 48px;
     padding: 40px;
-    background: linear-gradient(135deg, var(--green-dark), var(--green));
+    background: linear-gradient(135deg, #1E3A1E, var(--green));
     border-radius: var(--radius);
     color: white;
 }
@@ -819,7 +811,7 @@ h1, h2, h3, h4 {
 
 .btn-add:hover {
     background: var(--saffron-dark);
-    box-shadow: 0 4px 15px rgba(255, 107, 43, 0.4);
+    box-shadow: 0 4px 15px rgba(212, 150, 10, 0.4);
 }
 
 /* ========== CONTACT ========== */
@@ -872,7 +864,7 @@ h1, h2, h3, h4 {
 .form-group textarea:focus {
     outline: none;
     border-color: var(--saffron);
-    box-shadow: 0 0 0 3px rgba(255, 107, 43, 0.1);
+    box-shadow: 0 0 0 3px rgba(212, 150, 10, 0.15);
 }
 
 .form-row {
@@ -918,7 +910,7 @@ h1, h2, h3, h4 {
 
 /* ========== FOOTER ========== */
 .footer {
-    background: var(--green-dark);
+    background: #1E3A1E;
     color: rgba(255,255,255,0.8);
     padding: 60px 0 0;
 }
@@ -935,8 +927,8 @@ h1, h2, h3, h4 {
     margin-bottom: 16px;
 }
 
-.footer-about .logo-text {
-    color: white;
+.footer-about .logo-img {
+    height: 100px;
 }
 
 .footer-about p {
@@ -1474,15 +1466,20 @@ h1, h2, h3, h4 {
         display: flex;
     }
 
+    .logo-img {
+        width: 140px;
+        height: 50px;
+    }
+
     .nav-links {
         position: fixed;
         top: 72px;
         left: 0;
         right: 0;
-        background: var(--cream);
+        background: #3B5A3A;
         flex-direction: column;
         padding: 20px;
-        border-bottom: 2px solid var(--border);
+        border-bottom: 3px solid rgba(212, 150, 10, 0.4);
         transform: translateY(-120%);
         transition: var(--transition);
         z-index: 999;
