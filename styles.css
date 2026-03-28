@@ -233,7 +233,7 @@ h1, h2, h3, h4 {
 }
 
 .hero-subtitle {
-    font-size: 17px !important;
+    font-size: 19px !important;
     font-weight: 300;
     letter-spacing: 0.2px;
 }
@@ -290,7 +290,7 @@ h1, h2, h3, h4 {
 
 .hero-stats {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
     gap: 32px;
     flex-wrap: wrap;
@@ -298,6 +298,11 @@ h1, h2, h3, h4 {
 
 .stat {
     text-align: center;
+      flex: 1;
+    padding: 28px 32px;
+    min-width: 180px;
+    position: relative;
+    transition: var(--transition);
 }
 
 .stat-num {
@@ -306,20 +311,24 @@ h1, h2, h3, h4 {
     font-size: 32px;
     font-weight: 700;
     color: var(--gold);
+    font-size: 44px;
+    line-height: 1.1;
+    margin-bottom: 6px;
 }
 
 .stat-label {
-    font-size: 13px;
-    opacity: 0.8;
+     font-size: 19px;
+    opacity: 0.9;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 1.5px;
+    color: rgba(255, 255, 255, 0.8);
 }
 
 .stat-divider {
-    width: 1px;
-    height: 40px;
-    background: rgba(255,255,255,0.2);
-}
+width: 1px;
+    align-self: stretch;
+    background: rgba(212, 150, 10, 0.3);
+    }
 
 .scroll-indicator {
     position: absolute;
