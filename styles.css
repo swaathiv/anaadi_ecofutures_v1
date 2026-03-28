@@ -9,7 +9,8 @@
     --green: #3B6B3A;
     --green-dark: #2E4E2D;
     --green-light: #E2F0E2;
-    --gold: #D4960A;
+/*    --gold: #D4960A;*/
+    --gold: #EFC120;
     --gold-light: #FDF6E3;
     --maroon: #5C3D1E;
     --cream: #F7F5F0;
@@ -187,7 +188,8 @@ h1, h2, h3, h4 {
     align-items: center;
     justify-content: center;
     text-align: center;
-    background: linear-gradient(135deg, #1E3A1E 0%, #2E4E2D 40%, #3B6B3A 100%);
+    /*background: linear-gradient(135deg, #1E3A1E 0%, #2E4E2D 40%, #3B6B3A 100%); */
+    background: linear-gradient(135deg, #2F4635 0%, #42644b 45%, #4F7560 100%);
     overflow: hidden;
 }
 
