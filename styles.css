@@ -68,7 +68,7 @@ h1, h2, h3, h4 {
     z-index: 1000;
     background: #42644b;
     backdrop-filter: blur(10px);
-    border-bottom: 3px solid rgba(212, 150, 10, 0.4);
+    border-bottom: 4px solid #efc120;
     transition: var(--transition);
 }
 
@@ -112,7 +112,7 @@ h1, h2, h3, h4 {
     color: rgba(255, 255, 255, 0.85);
     padding: 8px 16px;
     border-radius: var(--radius-sm);
-    font-size: 30:px;
+    font-size: 16px;
     font-weight: 500;
     transition: var(--transition);
 }
@@ -1465,6 +1465,136 @@ width: 1px;
     transform: translateX(-50%) translateY(0);
 }
 
+/* ========== JOURNEY TIMELINE ========== */
+.journey {
+    background: var(--white);
+}
+
+.timeline {
+    position: relative;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 0;
+}
+
+.timeline-line {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: linear-gradient(to bottom, var(--green-light), var(--green), var(--saffron), transparent);
+    transform: translateX(-50%);
+}
+
+.timeline-item {
+    position: relative;
+    width: 50%;
+    padding: 0 40px 60px;
+}
+
+.timeline-item.left {
+    left: 0;
+    text-align: right;
+}
+
+.timeline-item.right {
+    left: 50%;
+    text-align: left;
+}
+
+.timeline-dot {
+    position: absolute;
+    top: 8px;
+    width: 18px;
+    height: 18px;
+    background: var(--green);
+    border: 3px solid var(--white);
+    border-radius: 50%;
+    box-shadow: 0 0 0 4px var(--green-light);
+    z-index: 2;
+}
+
+.timeline-item.left .timeline-dot {
+    right: -9px;
+}
+
+.timeline-item.right .timeline-dot {
+    left: -9px;
+}
+
+.dot-future {
+    background: var(--saffron);
+    box-shadow: 0 0 0 4px var(--gold-light), 0 0 16px rgba(212, 150, 10, 0.35);
+    animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+    0%, 100% { box-shadow: 0 0 0 4px var(--gold-light), 0 0 16px rgba(212, 150, 10, 0.2); }
+    50% { box-shadow: 0 0 0 6px var(--gold-light), 0 0 24px rgba(212, 150, 10, 0.45); }
+}
+
+.timeline-content {
+    background: var(--cream);
+    padding: 24px 28px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+    border: 1px solid var(--border);
+}
+
+.timeline-content:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+}
+
+.timeline-future {
+    background: linear-gradient(135deg, var(--gold-light), #FFF9E6);
+    border: 2px dashed var(--saffron);
+}
+
+.timeline-year {
+    display: inline-block;
+    background: var(--green);
+    color: var(--white);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 4px 14px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+    font-family: 'Poppins', sans-serif;
+    letter-spacing: 0.5px;
+}
+
+.timeline-future .timeline-year {
+    background: var(--saffron);
+}
+
+.timeline-content h3 {
+    font-size: 20px;
+    color: var(--green-dark);
+    margin-bottom: 8px;
+}
+
+.timeline-content p {
+    font-size: 14px;
+    color: var(--text-light);
+    line-height: 1.7;
+}
+
+.timeline-link {
+    color: var(--saffron);
+    font-weight: 500;
+    text-decoration: none;
+    font-size: 13px;
+    transition: var(--transition);
+}
+
+.timeline-link:hover {
+    color: var(--saffron-dark);
+    text-decoration: underline;
+}
+
 /* ========== RESPONSIVE ========== */
 @media (max-width: 1024px) {
     .research-card {
@@ -1490,7 +1620,7 @@ width: 1px;
         background: #3B5A3A;
         flex-direction: column;
         padding: 20px;
-        border-bottom: 3px solid rgba(212, 150, 10, 0.4);
+        border-bottom: 4px solid #efc120;
         transform: translateY(-120%);
         transition: var(--transition);
         z-index: 999;
@@ -1577,5 +1707,26 @@ width: 1px;
 
     .progress-line {
         width: 40px;
+    }
+
+    /* Timeline mobile */
+    .timeline-line {
+        left: 20px;
+    }
+
+    .timeline-item {
+        width: 100%;
+        left: 0 !important;
+        padding: 0 0 40px 52px;
+        text-align: left !important;
+    }
+
+    .timeline-item .timeline-dot {
+        left: 11px !important;
+        right: auto !important;
+    }
+
+    .timeline-content h3 {
+        font-size: 18px;
     }
 }
