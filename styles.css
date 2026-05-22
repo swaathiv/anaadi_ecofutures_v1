@@ -1465,6 +1465,95 @@ width: 1px;
     transform: translateX(-50%) translateY(0);
 }
 
+/* ========== WHY GOVAR ========== */
+.why-govar {
+    background: linear-gradient(135deg, #2F4635 0%, #42644b 45%, #4F7560 100%);
+    color: var(--white);
+}
+
+.why-govar .section-tag {
+    color: var(--gold);
+    border-color: rgba(239, 193, 32, 0.3);
+}
+
+.why-govar .section-header h2 {
+    color: var(--white);
+}
+
+.why-govar .deco-dot {
+    background: var(--gold);
+}
+
+.why-govar .deco-line {
+    background: rgba(239, 193, 32, 0.4);
+}
+
+.govar-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 28px;
+    margin-top: 20px;
+}
+
+.govar-card {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: var(--radius);
+    padding: 36px 28px;
+    text-align: center;
+    transition: var(--transition);
+    backdrop-filter: blur(4px);
+}
+
+.govar-card:hover {
+    background: rgba(255, 255, 255, 0.14);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+}
+
+.govar-icon-wrap {
+    width: 72px;
+    height: 72px;
+    min-width: 72px;
+    min-height: 72px;
+    margin: 0 auto 20px;
+    background: rgba(239, 193, 32, 0.12);
+    border: 2px solid rgba(239, 193, 32, 0.3);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    transition: var(--transition);
+}
+
+.govar-card:hover .govar-icon-wrap {
+    background: rgba(239, 193, 32, 0.2);
+    border-color: var(--gold);
+}
+
+.govar-icon {
+    width: 36px;
+    height: 36px;
+    max-width: 36px;
+    max-height: 36px;
+    display: block;
+    flex-shrink: 0;
+    color: var(--gold);
+}
+
+.govar-card h3 {
+    font-size: 20px;
+    color: var(--white);
+    margin-bottom: 12px;
+}
+
+.govar-card p {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.75);
+    line-height: 1.7;
+}
+
 /* ========== JOURNEY TIMELINE ========== */
 .journey {
     background: var(--white);
@@ -1600,6 +1689,10 @@ width: 1px;
     .research-card {
         flex: 0 1 calc(50% - 12px);
     }
+
+    .govar-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 
 @media (max-width: 768px) {
@@ -1657,6 +1750,10 @@ width: 1px;
         padding: 24px;
     }
 
+    .govar-grid {
+        grid-template-columns: 1fr;
+    }
+
     .research-card {
         flex: 0 1 100%;
     }
@@ -1684,6 +1781,7 @@ width: 1px;
     .section-header h2 {
         font-size: 30px;
     }
+
 
     .section {
         padding: 60px 0;
