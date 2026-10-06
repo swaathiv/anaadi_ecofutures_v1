@@ -1,4 +1,5 @@
-import type { DeliveryDetails } from "@/lib/types";
+/** Shared validation (website + Cloud Functions). Relative imports only. */
+import type { DeliveryDetails } from "./types";
 
 export type FieldErrors = Partial<Record<string, string>>;
 
@@ -41,7 +42,8 @@ export const INDIAN_STATES = [
   "West Bengal",
 ] as const;
 
-const str = (form: FormData, key: string) => String(form.get(key) ?? "").trim();
+type Input = Record<string, unknown>;
+const str = (input: Input, key: string) => (typeof input[key] === "string" ? (input[key] as string).trim() : "");
 
 export function normaliseEmail(value: string) {
   return value.trim().toLowerCase();
@@ -57,7 +59,7 @@ export function normalisePhone(value: string) {
   return /^[6-9]\d{9}$/.test(digits) ? digits : null;
 }
 
-export function parseDelivery(form: FormData): { data?: DeliveryDetails; errors: FieldErrors } {
+export function parseDelivery(form: Input): { data?: DeliveryDetails; errors: FieldErrors } {
   const errors: FieldErrors = {};
   const name = str(form, "name");
   const phoneRaw = str(form, "phone");
@@ -92,4 +94,14 @@ export function parseDelivery(form: FormData): { data?: DeliveryDetails; errors:
       pincode,
     },
   };
+}
+
+/** "+919876543210" from any accepted Indian mobile format, else null. */
+export function toE164India(value: string) {
+  const local = normalisePhone(value);
+  return local ? `+91${local}` : null;
+}
+
+export function displayPhone(e164?: string) {
+  return e164?.startsWith("+91") ? `+91 ${e164.slice(3, 8)} ${e164.slice(8)}` : (e164 ?? "");
 }

@@ -1,0 +1,59 @@
+rules_version = '2';
+
+// Access rules for Anaadi Ecofutures.
+//
+// users/{uid}    profile + saved delivery address; only its owner.
+// orders/{id}    read by the customer who placed it, or an admin.
+//                NEVER written by browsers: Cloud Functions create and update
+//                orders, so prices cannot be tampered with.
+// admins/{uid}   presence = admin. Created by hand in the Firebase console.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return signedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    function isText(v, min, max) {
+      return v is string && v.size() >= min && v.size() <= max;
+    }
+
+    function validProfile(d) {
+      return d.keys().hasOnly(['name', 'phone', 'email', 'address', 'createdAt'])
+        && isText(d.name, 2, 100)
+        && (!('phone' in d) || (d.phone is string && d.phone.matches('^\\+91[6-9][0-9]{9}$')))
+        && (!('email' in d) || isText(d.email, 3, 254))
+        && (!('address' in d) || d.address is map)
+        && isText(d.createdAt, 10, 40);
+    }
+
+    match /users/{uid} {
+      allow get: if signedIn() && request.auth.uid == uid;
+      allow create: if signedIn() && request.auth.uid == uid && validProfile(request.resource.data);
+      // The address is set by the placeOrder function; customers may edit
+      // name and phone, but not change createdAt.
+      allow update: if signedIn() && request.auth.uid == uid
+        && validProfile(request.resource.data)
+        && request.resource.data.createdAt == resource.data.createdAt;
+      allow delete: if false;
+    }
+
+    match /orders/{orderId} {
+      allow get, list: if signedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow write: if false;
+    }
+
+    match /admins/{uid} {
+      allow get: if signedIn() && request.auth.uid == uid;
+      allow list, write: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -7,3 +7,8 @@ next-env.d.ts
 .env
 # Local order/account store (contains customer data)
 .data/
+# Firebase
+.firebase/
+firebase-debug*.log
+firestore-debug.log
+ui-debug.log

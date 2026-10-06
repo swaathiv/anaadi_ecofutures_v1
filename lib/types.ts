@@ -1,23 +1,8 @@
-/** Shared data shapes for accounts and orders. */
-
-export interface User {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  passwordHash: string;
-  createdAt: string;
-  address?: DeliveryDetails;
-}
-
-export interface Session {
-  tokenHash: string;
-  userId: string;
-  expiresAt: string;
-}
+/** Shared data shapes (website + Cloud Functions). Keep import-free. */
 
 export interface DeliveryDetails {
   name: string;
+  /** 10-digit Indian mobile, no prefix. */
   phone: string;
   line1: string;
   line2?: string;
@@ -25,6 +10,16 @@ export interface DeliveryDetails {
   city: string;
   state: string;
   pincode: string;
+}
+
+/** Firestore: users/{uid}. */
+export interface Profile {
+  name: string;
+  /** E.164, e.g. +919876543210. */
+  phone?: string;
+  email?: string;
+  address?: DeliveryDetails;
+  createdAt: string;
 }
 
 export type OrderStatus = "placed" | "confirmed" | "shipped" | "delivered" | "cancelled";
@@ -37,10 +32,12 @@ export interface OrderLine {
   lineTotal: number | null;
 }
 
+/** Firestore: orders/{id}. Written only by Cloud Functions. */
 export interface Order {
   id: string;
   userId: string;
-  email: string;
+  /** Account contact at the time of ordering. */
+  customer: { name: string; phone?: string; email?: string };
   lines: OrderLine[];
   delivery: DeliveryDetails;
   notes?: string;
@@ -52,7 +49,9 @@ export interface Order {
   paymentMethod: "cod";
   status: OrderStatus;
   history: { status: OrderStatus; at: string; note?: string }[];
+  /** ISO 8601 timestamps (sortable as strings). */
   createdAt: string;
+  updatedAt: string;
 }
 
 export const ORDER_STATUSES: OrderStatus[] = ["placed", "confirmed", "shipped", "delivered", "cancelled"];

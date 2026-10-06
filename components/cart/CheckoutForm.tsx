@@ -1,16 +1,22 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState } from "react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
-import { placeOrder, type CheckoutState } from "@/app/actions/orders";
 import { Field, FormAlert } from "@/components/forms/Field";
 import { getProduct } from "@/lib/catalog";
+import { callable, errorMessage } from "@/lib/firebase";
 import type { DeliveryDetails } from "@/lib/types";
-import { INDIAN_STATES } from "@/lib/validation";
+import { INDIAN_STATES, parseDelivery, type FieldErrors } from "@/lib/validation";
 
 import { QuoteTotals } from "./BagView";
 import { useCart } from "./CartProvider";
+
+const placeOrder = callable<
+  { items: { slug: string; quantity: number }[]; delivery: DeliveryDetails; notes: string; saveAddress: boolean },
+  { id: string }
+>("placeOrder");
 
 export function CheckoutForm({ saved, fallbackName, fallbackPhone }: {
   saved?: DeliveryDetails;
@@ -18,10 +24,11 @@ export function CheckoutForm({ saved, fallbackName, fallbackPhone }: {
   fallbackPhone: string;
 }) {
   const { items, ready } = useCart();
-  const [state, action, pending] = useActionState<CheckoutState, FormData>(placeOrder, {});
-  const e = state.fieldErrors ?? {};
-  const v = (k: keyof DeliveryDetails | "notes") =>
-    state.values?.[k] ?? (k === "notes" ? "" : (saved?.[k] ?? ""));
+  const router = useRouter();
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState<string>();
+  const [e, setFieldErrors] = useState<FieldErrors>({});
+  const v = (k: keyof DeliveryDetails | "notes") => (k === "notes" ? "" : (saved?.[k] ?? ""));
 
   if (!ready) return <p className="text-muted">Loading your bag…</p>;
   const valid = items.filter((i) => getProduct(i.slug));
@@ -38,13 +45,40 @@ export function CheckoutForm({ saved, fallbackName, fallbackPhone }: {
   }
 
   return (
-    // Keyed on returned values: React resets forms after an action, and a
-    // <select> would otherwise lose its value. Remounting reapplies defaults.
-    <form key={JSON.stringify(state.values ?? {})} action={action} className="grid gap-12 lg:grid-cols-12" noValidate>
-      <input type="hidden" name="cart" value={JSON.stringify(valid)} />
+    <form
+      className="grid gap-12 lg:grid-cols-12"
+      noValidate
+      onSubmit={async (event) => {
+        event.preventDefault();
+        const values = Object.fromEntries(new FormData(event.currentTarget)) as Record<string, string>;
+        // Same validation the placeOrder function runs, for instant feedback.
+        const { data: delivery, errors } = parseDelivery(values);
+        setFieldErrors(errors);
+        if (!delivery) {
+          setError("Please check the highlighted fields.");
+          return;
+        }
+        setError(undefined);
+        setPending(true);
+        try {
+          const { id } = await placeOrder({
+            items: valid,
+            delivery,
+            notes: values.notes ?? "",
+            saveAddress: values.saveAddress === "on",
+          });
+          router.push(`/account/order?id=${encodeURIComponent(id)}&placed=1`);
+        } catch (err) {
+          const details = (err as { details?: { fieldErrors?: FieldErrors } }).details;
+          if (details?.fieldErrors) setFieldErrors(details.fieldErrors);
+          setError(errorMessage(err));
+          setPending(false);
+        }
+      }}
+    >
       <fieldset className="space-y-5 lg:col-span-7">
         <legend className="font-display text-3xl text-forest">Delivery details</legend>
-        <FormAlert message={state.error} />
+        <FormAlert message={error} />
         <Field label="Recipient’s full name" name="name" autoComplete="name" defaultValue={v("name") || fallbackName} error={e.name} />
         <Field
           label="Mobile number"

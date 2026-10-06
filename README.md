@@ -1,94 +1,127 @@
 # Anaadi Ecofutures website
 
-Next.js (App Router) + TypeScript + Tailwind CSS v4. Three public routes plus
-accounts and cash-on-delivery ordering.
+Next.js (static export) + TypeScript + Tailwind CSS v4, on Firebase:
+
+| Firebase service | What it does here |
+| --- | --- |
+| **Hosting** | Serves the website files on anaadiecofutures.com |
+| **Authentication** | Sign-in by mobile number (SMS one-time code) or email + password |
+| **Firestore** | Stores profiles, saved addresses and orders |
+| **Cloud Functions** | `placeOrder` fixes each order's prices from `lib/pricing.ts`; `cancelOrder`; `updateOrderStatus` (admins) |
+
+Browsers can never write orders: `firestore.rules` forbids it, so prices
+cannot be faked. Every order is cash on delivery.
 
 | Route | Purpose |
 | --- | --- |
-| `/` | Homepage: hero, purpose (Energy + Vastras), mission panel |
-| `/energy` | Gobar-based energy: approach, process, journey, research, consultancy, varatti |
-| `/vastras` | Anaadi Vastras: fabrics, saree collection, craft and care |
-| `/vastras/[slug]` | Individual saree |
+| `/` | Homepage |
+| `/energy` | Gobar-based energy, with varatti to order |
+| `/vastras`, `/vastras/<saree>` | Anaadi Vastras collection |
 | `/cart`, `/checkout` | Bag and cash-on-delivery checkout (sign-in required) |
-| `/account`, `/account/orders/[id]` | Order history, delivery address, order tracking |
-| `/account/login`, `/account/register` | Email + password accounts |
-| `/admin/orders` | Order list and status updates (emails in `ADMIN_EMAILS` only) |
+| `/account/login` | Sign in with mobile OTP or email |
+| `/account`, `/account/order?id=…` | Orders, saved address, live order tracking |
+| `/admin/orders` | All orders; change status, add a note for the customer |
 
-## Setup
+## Going live: step by step
 
-Requires Node.js 20.9 or newer (developed on Node 22).
+You need a Google account and a payment card (Cloud Functions and SMS
+require the pay-as-you-go **Blaze** plan; small usage usually stays within
+the free allowance, but check console.firebase.google.com/pricing and set a
+budget alert). Steps 1–7 are clicks in the Firebase console; 8–10 are
+commands on your computer.
+
+1. **Create the project.** console.firebase.google.com → *Create a project*
+   → name it (e.g. `anaadi-ecofutures`). Analytics is optional.
+2. **Upgrade to Blaze.** Bottom-left *Upgrade* → Blaze → add billing. Then
+   in Google Cloud console → Billing → *Budgets & alerts*, create a small
+   budget (e.g. ₹500/month) so you are emailed before any real cost.
+3. **Register the web app.** Project overview → web icon `</>` → nickname
+   "website" → tick *Also set up Firebase Hosting* → Register. Copy the
+   `firebaseConfig` values into a new file `.env.production.local` using
+   `.env.example` as the template.
+4. **Turn on sign-in.** Build → Authentication → *Get started*:
+   - *Phone* → enable. Then Authentication → Settings → *SMS region policy*
+     → **Allow** only **India**, which blocks SMS fraud to other countries.
+   - *Email/Password* → enable (useful for your own admin login).
+   - Settings → *Authorized domains*: add `anaadiecofutures.com` (and
+     `www.anaadiecofutures.com` if used).
+5. **Create the database.** Build → Firestore Database → *Create database*
+   → location **asia-south1 (Mumbai)** (cannot be changed later) →
+   *production mode*.
+6. **Install the tools** (once, on your computer; needs Node.js 20.9+):
+   ```bash
+   npm install
+   npm --prefix functions install
+   npx firebase login
+   npx firebase use --add      # pick your project, alias "default"
+   ```
+   This replaces the placeholder project ID in `.firebaserc`.
+7. **Deploy everything** (site, rules, indexes, functions):
+   ```bash
+   npm run deploy
+   ```
+   The first functions deploy can take several minutes and may ask to
+   enable some Google Cloud APIs; answer yes.
+8. **Make yourself admin.** Open the site at the `…web.app` address the
+   deploy prints, sign in, and go to `/admin/orders`; the page shows your user
+   ID. In the console: Firestore → *Start collection* `admins` → Document ID
+   = that user ID → add any field (e.g. `role` = `owner`) → Save. Reload.
+9. **Test on the `…web.app` address**: sign in with your mobile, order one
+   varatti, confirm it in `/admin/orders`, watch the status change on the
+   order page, then cancel or mark it delivered.
+10. **Move the domain.** Hosting → *Add custom domain* →
+    `anaadiecofutures.com` (and `www`). Firebase shows DNS records; enter them
+    at your domain registrar, replacing the GitHub Pages records. It can take
+    up to a few hours, and Firebase issues the HTTPS certificate itself.
+    Then disable GitHub Pages in the repository settings.
+
+Afterwards, `npm run deploy:site` publishes page changes only; `npm run
+deploy` publishes everything. **After changing a price in `lib/pricing.ts`,
+run the full `npm run deploy`** so the site and the order function agree.
+
+## Run it locally
+
+Uses the Firebase emulators: local fake versions of Auth, Firestore and
+Functions. No real SMS is sent; codes appear in the emulator UI. Needs Java
+11+ for the Firestore emulator.
 
 ```bash
-npm install
-cp .env.example .env.local     # then set ADMIN_EMAILS
-npm run dev                    # http://localhost:3000
+cp .env.development.local.example .env.development.local
+npm run emulators          # terminal 1 – UI at http://127.0.0.1:4000
+npm run dev                # terminal 2 – site at http://localhost:3000
+npm run test:security      # optional, terminal 3 – tries to cheat; must pass
 ```
 
-Production build:
-
-```bash
-npm run build
-npm start
-```
-
-Checks: `npm run typecheck`.
-
-Fonts (Marcellus, Public Sans, Barlow Condensed) are fetched by `next/font`
-at build time and self-hosted as WOFF2, so the build machine needs access to
-Google Fonts once; visitors' browsers never contact Google.
-
-### Environment
-
-| Variable | Default | Meaning |
-| --- | --- | --- |
-| `DATA_DIR` | `.data` | Where the JSON store (`db.json`) lives. Must be persistent disk. |
-| `ADMIN_EMAILS` | empty | Comma-separated account emails allowed into `/admin/orders`. |
-| `NEXT_PUBLIC_CONTACT_EMAIL` | `info@anaadiecofutures.com` | Public contact email. Set empty to hide. |
-
-To become an admin: add your email to `ADMIN_EMAILS`, restart, then register
-(or sign in) with that email.
+Phone sign-in locally: enter any 10-digit mobile, then read the code at
+<http://127.0.0.1:4000/auth> (or the terminal log).
 
 ## How ordering works
 
-1. Customers add sarees or varatti to the bag (stored in the browser).
-2. Checkout requires an account; delivery details are validated (10-digit
-   Indian mobile, 6-digit PIN, state list) and can be saved to the account.
-3. Payment is **cash on delivery only**. No payment data is collected.
-4. The server re-prices every order from `lib/catalog.ts`; client prices are
-   display only.
-5. Orders are `placed → confirmed → shipped → delivered` (or `cancelled`).
-   Customers can cancel while `placed`. Admins change status and can add a
-   note that the customer sees on the order page.
+1. Customers add sarees or varatti to the bag (kept in the browser).
+2. Checkout requires sign-in. First-time customers give their name (and
+   mobile, for email accounts). Delivery details are validated (10-digit
+   mobile, 6-digit PIN, state list) and can be saved for next time.
+3. The browser sends only *which* products and how many. The `placeOrder`
+   function looks up prices in `lib/pricing.ts`, works out shipping (₹80,
+   free from ₹1,000) and the ₹50 COD fee, and saves the order with those
+   prices fixed. Later price changes do not touch existing orders. It also
+   limits each customer to 10 orders per 24 hours.
+4. Status: `placed → confirmed → shipped → delivered` (or `cancelled`).
+   Customers can cancel while `placed`. Admins change status in
+   `/admin/orders`; customers see updates live.
 
-Sarees have no supplied price, so they are ordered as "price confirmed before
-dispatch"; the order shows the priced amount "so far". Use the admin note to
-record the confirmed price. (There is no admin price-editing yet.)
+Sarees have no price yet, so they are ordered as "price confirmed before
+dispatch" and the order shows the "amount so far".
 
-Shipping (₹80, free from ₹1,000) and the ₹50 COD fee are the values from the
-previous site's checkout. Change them in `commerce` in `lib/catalog.ts`.
+## Where things live
 
-### Data storage — read before deploying
-
-`lib/server/db.ts` is a single JSON file with atomic writes, serialised within
-one Node process. It is fine locally and on one long-running server with a
-persistent disk. It **will lose data** on serverless or multi-instance hosting
-(e.g. Vercel). Before such a deployment, replace `read`/`write` in that file
-with a database (Postgres etc.); the rest of the app only uses those two
-functions. Back up `DATA_DIR/db.json`; it contains customer names, phone
-numbers and addresses.
-
-Security notes: passwords are hashed with scrypt; sessions are random 256-bit
-tokens stored hashed, in an httpOnly, SameSite=Lax cookie (Secure in
-production); server actions have Next's built-in origin check; sign-in has a
-simple per-process attempt limit. There is no password-reset or email
-verification flow yet, because no email-sending service is configured.
-
-## Where content lives
-
-- `lib/content/site.ts` — navigation, contact details, enquiry topics
-- `lib/content/home.ts`, `energy.ts`, `vastras.ts` — page copy
-- `lib/content/images.ts` — every image, its alt text and focal point
-- `lib/catalog.ts` — products, prices, shipping rules
+- `lib/pricing.ts` — names, prices, shipping, COD fee (shared with functions)
+- `lib/catalog.ts` — product descriptions and images
+- `lib/content/*.ts` — page copy, navigation, contact details
+- `lib/content/images.ts` — images, alt text, focal points
+- `functions/src/index.ts` — the three Cloud Functions
+- `firestore.rules` — who may read or write what
+- `scripts/test-security.mjs` — automated checks of the above
 - `assets/images/` — processed images; regenerate with
   `python3 scripts/prepare-assets.py <dir-with-source-files>` (crops only)
 
@@ -96,7 +129,8 @@ verification flow yet, because no email-sending service is configured.
 
 `SiteHeader`, `SiteFooter`, `PageHero`, `Collage`, `FeatureCard`,
 `MissionPanel`, `ContactSection`, `FabricCollection`, `FabricSwatch`,
-`ProcessSteps`, `CrossLink`, and the artwork `art/ThreadKolamCircuit`.
+`ProcessSteps`, `CrossLink`, `auth/*` (sign-in, profile, guards) and the
+artwork `art/ThreadKolamCircuit`.
 
 `ThreadKolamCircuit` is generated from `components/art/geometry.ts`: two
 strands enter as irregular threads (with companion fibres and one gold
@@ -147,12 +181,13 @@ that is disabled under `prefers-reduced-motion`.
   `lib/content/site.ts`.
 - The order confirmation says Anaadi will phone the customer to confirm
   before dispatch. Change the wording in
-  `app/account/orders/[id]/page.tsx` if that is not the process.
+  `app/account/order/OrderClient.tsx` if that is not the process.
+- There is no admin price editing: for sarees, record the confirmed price in
+  the status note.
 
 **Hosting**
 
-- The repository previously served a static site through GitHub Pages
-  (`CNAME` → anaadiecofutures.com). This branch replaces that site with a
-  Next.js app, which GitHub Pages cannot run (accounts and orders need a
-  server). Do not merge into the Pages branch until a Node host is chosen;
-  `CNAME` is left unchanged and no DNS was touched.
+- The live domain currently points at GitHub Pages (`CNAME` file). Keep it
+  there until the Firebase site is tested (step 9), then switch DNS (step 10).
+  Merging this branch into the branch GitHub Pages serves would break the old
+  site, so merge after the DNS switch, then turn off GitHub Pages.
