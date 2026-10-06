@@ -36,9 +36,10 @@ commands on your computer.
    in Google Cloud console → Billing → *Budgets & alerts*, create a small
    budget (e.g. ₹500/month) so you are emailed before any real cost.
 3. **Register the web app.** Project overview → web icon `</>` → nickname
-   "website" → tick *Also set up Firebase Hosting* → Register. Copy the
-   `firebaseConfig` values into a new file `.env.production.local` using
-   `.env.example` as the template.
+   "website" → tick *Also set up Firebase Hosting* → Register. The
+   `firebaseConfig` values for `anaadi-ecofutures` are already in
+   `.env.production` (done). For a different project, override them in
+   `.env.production.local` using `.env.example` as the template.
 4. **Turn on sign-in.** Build → Authentication → *Get started*:
    - *Phone* → enable. Then Authentication → Settings → *SMS region policy*
      → **Allow** only **India**, which blocks SMS fraud to other countries.
