@@ -37,7 +37,7 @@ export function FabricSwatch({ weave }: { weave: "plain" | "fine" | "satin" }) {
         })}
       </g>
       <path d="M -4 148 C 80 147 160 149 244 148" stroke="var(--thread-gold)" strokeWidth="1.1" fill="none" />
-      <path d="M -4 152 C 80 153 160 151 244 152" stroke="var(--thread-gold)" strokeWidth="0.5" fill="none" opacity="0.7" />
+      <path d="M -4 153 C 80 154 160 152 244 153" stroke="var(--logo-yellow)" strokeWidth="0.9" fill="none" />
     </svg>
   );
 }

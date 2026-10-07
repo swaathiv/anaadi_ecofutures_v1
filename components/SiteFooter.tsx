@@ -5,7 +5,8 @@ import { footerNav, site } from "@/lib/content/site";
 export function SiteFooter({ logo }: { logo: React.ReactNode }) {
   return (
     <footer className="container-site pb-10">
-      <div className="flex flex-col gap-8 border-t border-hairline pt-8 md:flex-row md:items-center md:justify-between">
+      <div className="relative flex flex-col gap-8 border-t border-hairline pt-8 md:flex-row md:items-center md:justify-between">
+        <span aria-hidden="true" className="absolute -top-px left-0 h-0.5 w-12 bg-logo-yellow" />
         {logo}
         <nav aria-label="Footer">
           <ul className="flex flex-wrap gap-x-8 gap-y-1">

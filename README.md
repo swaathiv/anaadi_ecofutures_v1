@@ -43,7 +43,9 @@ commands on your computer.
 4. **Turn on sign-in.** Build → Authentication → *Get started*:
    - *Phone* → enable. Then Authentication → Settings → *SMS region policy*
      → **Allow** only **India**, which blocks SMS fraud to other countries.
-   - *Email/Password* → enable (useful for your own admin login).
+   - *Email/Password* → enable. **Required for email sign-up**: if it is
+     off, account creation fails with "This sign-in method is not switched
+     on yet".
    - Settings → *Authorized domains*: add `anaadiecofutures.com` (and
      `www.anaadiecofutures.com` if used).
 5. **Create the database.** Build → Firestore Database → *Create database*
@@ -138,7 +140,11 @@ strands enter as irregular threads (with companion fibres and one gold
 fibre), interlace as a sikku-kolam lattice that loops around a dot grid, then
 pass one softened arch, then straighten into 45°/right-angle traces ending
 in open pads. One strand is the brand green, the other the logo yellow
-(`--logo-yellow`, #FBC108), so they visibly interweave. Variants:
+(`--logo-yellow`, #FBC108), so they visibly interweave. The same yellow
+appears as small accents elsewhere: the tip of each section rule, the arrow
+on primary buttons, card hover threads, timeline and process markers, the
+footer rule and text selection. It is decorative only (1.6:1 on ivory) and
+never carries meaning by itself. Variants:
 `divider` (desktop + a separate simplified mobile band), `panel` (mission
 panel, cropped), `vastras` (thread/kolam-led), `energy` (mirrored,
 circuit-led). All are `aria-hidden`. On the homepage divider a soft-edged

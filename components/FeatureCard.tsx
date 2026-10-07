@@ -30,7 +30,12 @@ export function FeatureCard({
           style={{ objectPosition: image.focus }}
         />
       </div>
-      <div className="flex flex-1 flex-col p-6 md:p-8">
+      <div className="relative flex flex-1 flex-col p-6 md:p-8">
+        {/* A yellow thread draws across the panel on hover. */}
+        <span
+          aria-hidden="true"
+          className="absolute top-0 left-0 h-0.5 w-0 bg-logo-yellow transition-[width] duration-500 ease-out group-hover:w-full group-has-[:focus-visible]:w-full"
+        />
         <p className="eyebrow eyebrow-rule">{eyebrow}</p>
         <h3 className="text-card mt-5">{title}</h3>
         <p className="mt-3 text-ink">{body}</p>

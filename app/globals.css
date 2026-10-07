@@ -19,6 +19,8 @@
   --thread-gold: #aa8a4b;
   /* Yellow from the original logo (#FBC108). Decorative only: 1.6:1 on paper. */
   --logo-yellow: #fbc108;
+  /* Pale tint of the logo yellow for backgrounds behind text (selection). */
+  --logo-yellow-soft: #fdeba8;
   --error: #9a3324;
 }
 
@@ -91,7 +93,7 @@
   }
 
   ::selection {
-    background: var(--sage);
+    background: var(--logo-yellow-soft);
     color: var(--forest-ink);
   }
 
@@ -143,14 +145,23 @@
     }
   }
 
-  /* Short rule under an eyebrow, as in the mockup. */
+  /*
+   * Short rule under an eyebrow: a green thread ending in a short yellow
+   * tip (the logo yellow), echoing the artwork's circuit terminals. Hard
+   * colour stops, no blending.
+   */
   .eyebrow-rule::after {
     content: "";
     display: block;
-    width: 2rem;
+    width: 2.5rem;
     height: 2px;
     margin-top: 0.75rem;
-    background: var(--brand-green);
+    background: linear-gradient(
+      to right,
+      var(--brand-green) 0 68%,
+      transparent 68% 76%,
+      var(--logo-yellow) 76% 100%
+    );
   }
   .eyebrow-rule.mx-auto::after,
   .text-center > .eyebrow-rule::after {
@@ -206,6 +217,10 @@
   .btn-primary {
     background: var(--brand-green);
     color: var(--paper);
+  }
+  /* Yellow arrow on green, as the logo sets yellow on green (4:1). */
+  .btn-primary svg {
+    color: var(--logo-yellow);
   }
   .btn-primary:hover {
     background: var(--brand-green-deep);

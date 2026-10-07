@@ -150,7 +150,11 @@ export default function EnergyPage() {
           <SectionHeading id="journey-title" eyebrow={journey.eyebrow} title={journey.title} />
           <ol className="mt-12 grid gap-0 md:grid-cols-2 lg:grid-cols-3">
             {journey.milestones.map((m) => (
-              <li key={m.year} className="border-t border-forest/40 py-6 md:pr-10">
+              <li key={m.year} className="relative border-t border-forest/40 py-6 md:pr-10">
+                <span
+                  aria-hidden="true"
+                  className="absolute -top-[5px] left-0 h-[9px] w-[9px] rounded-full border border-logo-yellow bg-paper"
+                />
                 <p className="font-label text-lg font-semibold tracking-[0.1em] text-brand">{m.year}</p>
                 <h3 className="mt-1 font-display text-2xl">{m.title}</h3>
                 <p className="mt-2 text-ink">{m.body}</p>

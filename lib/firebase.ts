@@ -53,11 +53,25 @@ export function callable<Req, Res>(name: string) {
   return (data: Req) => httpsCallable<Req, Res>(firebase().functions, name)(data).then((r) => r.data);
 }
 
-/** Human-readable message from a Firebase error. */
+/**
+ * Human-readable message from a Firebase error. Unrecognised errors keep
+ * their code in brackets so a problem can be diagnosed from a screenshot.
+ */
 export function errorMessage(error: unknown) {
   const code = (error as { code?: string })?.code ?? "";
   const map: Record<string, string> = {
+    // Setup problems (fix in the Firebase console).
+    "auth/operation-not-allowed":
+      "This sign-in method is not switched on yet. Please try the other method, or contact us.",
+    "auth/admin-restricted-operation":
+      "This sign-in method is not switched on yet. Please try the other method, or contact us.",
+    "auth/billing-not-enabled": "Sign-in by mobile number is not available yet. Please use email for now.",
+    "auth/unauthorized-domain": "Sign-in is not enabled for this web address yet.",
+    "auth/invalid-api-key": "Sign-in is not configured correctly on this site.",
+    "auth/api-key-not-valid.-please-pass-a-valid-api-key.": "Sign-in is not configured correctly on this site.",
+    // Customer-facing.
     "auth/invalid-phone-number": "Enter a valid 10-digit mobile number.",
+    "auth/missing-phone-number": "Enter your mobile number.",
     "auth/invalid-verification-code": "That code is not correct. Check the SMS and try again.",
     "auth/code-expired": "That code has expired. Please request a new one.",
     "auth/too-many-requests": "Too many attempts. Please wait a while and try again.",
@@ -68,12 +82,20 @@ export function errorMessage(error: unknown) {
     "auth/email-already-in-use": "An account with this email already exists. Sign in instead.",
     "auth/weak-password": "Use at least 8 characters.",
     "auth/invalid-email": "Enter a valid email address.",
+    "auth/user-disabled": "This account has been disabled. Please contact us.",
     "auth/network-request-failed": "Network problem. Check your connection and try again.",
     "auth/captcha-check-failed": "The security check failed. Please reload the page and try again.",
+    "auth/popup-closed-by-user": "Sign-in was cancelled.",
+    // Firestore (database).
+    "permission-denied": "We could not save your details (permission denied). Please contact us.",
+    unavailable: "We could not reach our servers. Check your connection and try again.",
+    // Cloud Functions not deployed / not reachable.
+    "functions/not-found": "Online ordering is not available yet. Please contact us to order.",
+    "functions/unavailable": "Online ordering is not available right now. Please try again shortly.",
   };
   if (map[code]) return map[code];
   const message = (error as { message?: string })?.message;
   // Callable functions return our own HttpsError messages.
-  if (code.startsWith("functions/") && message) return message;
-  return "Something went wrong. Please try again.";
+  if (code.startsWith("functions/") && code !== "functions/internal" && message) return message;
+  return code ? `Something went wrong (${code}). Please try again.` : "Something went wrong. Please try again.";
 }
