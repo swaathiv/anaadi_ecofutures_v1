@@ -7,6 +7,7 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
+    "gcp-build": "",
     "test": "node --test test/"
   },
   "dependencies": {
@@ -16,5 +17,6 @@
   "devDependencies": {
     "@types/node": "^22.20.5",
     "typescript": "^5.9.3"
-  }
+  },
+  "description": "Compiled locally by `npm run deploy` (predeploy). The empty gcp-build stops Google's build service re-running `build` in the cloud, where the shared ../lib sources are not uploaded."
 }

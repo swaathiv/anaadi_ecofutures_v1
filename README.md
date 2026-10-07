@@ -64,7 +64,10 @@ commands on your computer.
    npm run deploy
    ```
    The first functions deploy can take several minutes and may ask to
-   enable some Google Cloud APIs; answer yes.
+   enable some Google Cloud APIs; answer yes. It may also ask how many days
+   to keep container images; any small number (e.g. 1) is fine.
+   If it fails with `lib/functions/src/index.js does not exist`, you have an
+   older copy of the code: `git pull` and deploy again.
 8. **Make yourself the first admin** (one time only). Open the site at the
    `…web.app` address, sign in, and go to `/admin/orders`; the page shows
    your user ID. In the console: Firestore → *Start collection* `admins` →
