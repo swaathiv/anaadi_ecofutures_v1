@@ -2,15 +2,17 @@
  * Central image registry. Replace a file in assets/images (or point an entry
  * at a new import) to swap imagery site-wide.
  *
- * `temporary: true` marks concept imagery cropped from the approved mockup.
- * It is illustrative only and must be replaced with approved photographs
- * before launch. It must never be presented as an actual Anaadi installation.
+ * `temporary: true` marks concept imagery cropped from the approved mockup
+ * (low resolution, ~300–400 px wide). Replace with approved photographs of
+ * the same subjects when available; see README → "Assets to replace".
  */
 import type { StaticImageData } from "next/image";
 
 import logo from "@/assets/images/logo.png";
 import tempEnergyHero from "@/assets/images/temp-energy-hero.jpg";
 import tempEnergyCard from "@/assets/images/temp-energy-card.jpg";
+import tempFabricHero from "@/assets/images/temp-fabric-hero.jpg";
+import tempFabricCard from "@/assets/images/temp-fabric-card.jpg";
 import sareeMagenta from "@/assets/images/saree-magenta-peacock-blue.jpg";
 import sareeOrange from "@/assets/images/saree-orange-peacock-blue.jpg";
 import sareeIvory from "@/assets/images/saree-ivory-magenta.jpg";
@@ -35,14 +37,26 @@ export const images = {
   },
   energyHero: {
     src: tempEnergyHero,
-    alt: "Illustrative image: native Indian cattle resting under a shelter, with a domed gobar-based energy unit behind them.",
+    alt: "Native Indian cattle resting under a shelter, with a domed gobar-based energy unit behind them.",
     focus: "50% 60%",
     temporary: true,
   },
   energyCard: {
     src: tempEnergyCard,
-    alt: "Illustrative image: native Indian cattle beside a feeding trough, with a domed gobar-based energy unit in the background.",
+    alt: "Native Indian cattle beside a feeding trough, with a domed gobar-based energy unit in the background.",
     focus: "40% 60%",
+    temporary: true,
+  },
+  fabricHero: {
+    src: tempFabricHero,
+    alt: "Draped ivory handloom fabric with a green and gold woven border.",
+    focus: "50% 50%",
+    temporary: true,
+  },
+  fabricCard: {
+    src: tempFabricCard,
+    alt: "Folded ivory handloom fabrics with green and gold woven borders, beside raw cotton.",
+    focus: "60% 50%",
     temporary: true,
   },
   sareeMagenta: {

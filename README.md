@@ -136,21 +136,28 @@ artwork `art/ThreadKolamCircuit`.
 `ThreadKolamCircuit` is generated from `components/art/geometry.ts`: two
 strands enter as irregular threads (with companion fibres and one gold
 fibre), interlace as a sikku-kolam lattice that loops around a dot grid, then
-straighten into 45°/right-angle traces ending in open pads. Variants:
+pass one softened arch, then straighten into 45°/right-angle traces ending
+in open pads. One strand is the brand green, the other the logo yellow
+(`--logo-yellow`, #FBC108), so they visibly interweave. Variants:
 `divider` (desktop + a separate simplified mobile band), `panel` (mission
 panel, cropped), `vastras` (thread/kolam-led), `energy` (mirrored,
-circuit-led). All are `aria-hidden`; the divider has a one-time stroke reveal
-that is disabled under `prefers-reduced-motion`.
+circuit-led). All are `aria-hidden`. On the homepage divider a soft-edged
+mask sweeps left to right once on load (threads → kolam → circuit, ~2 s);
+under `prefers-reduced-motion` it is shown immediately.
 
 ## Handoff: open items
 
 **Assets to replace**
 
-- `assets/images/temp-energy-hero.jpg`, `temp-energy-card.jpg` are cropped
-  from the approved mockup (concept imagery, ~400 px wide, soft at large
-  sizes). They are labelled "Illustrative" on the site. Replace with approved
-  photographs of cattle and the actual gobar-energy setting, at least
-  1600 px wide, then remove `temporary: true` in `lib/content/images.ts`.
+- `assets/images/temp-*.jpg` are cropped from the approved mockup
+  (concept imagery, ~300–400 px wide, soft at large sizes): the cattle and
+  energy-unit images (homepage hero and Energy card, Energy page) and the
+  ivory/green fabric images (homepage hero and Vastras card). They are shown
+  without an "illustrative" label, so replace them with approved photographs
+  (at least 1600 px wide) before relying on them; the energy images in
+  particular should not be read as an actual Anaadi installation. The hero
+  fabric image's top-left corner is hidden behind the main hero image by the
+  collage proportions; a replacement can be any photograph.
 - Fabric section (Handloom Cotton, Silk-Cotton, Silk) uses a drawn thread
   study (`FabricSwatch`) because no fabric-specific photographs were
   supplied. Supply one photograph per fabric.

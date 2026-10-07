@@ -17,6 +17,8 @@
   --hairline: #b9c5b1;
   --thread-sage: #9db29a;
   --thread-gold: #aa8a4b;
+  /* Yellow from the original logo (#FBC108). Decorative only: 1.6:1 on paper. */
+  --logo-yellow: #fbc108;
   --error: #9a3324;
 }
 
@@ -32,6 +34,7 @@
   --color-hairline: var(--hairline);
   --color-thread: var(--thread-sage);
   --color-gold: var(--thread-gold);
+  --color-logo-yellow: var(--logo-yellow);
   --color-error: var(--error);
 
   --font-display: var(--font-marcellus), "Cormorant Garamond", Georgia, "Times New Roman", serif;
@@ -276,28 +279,31 @@
   }
 }
 
-/* One-time stroke reveal for the thread → kolam → circuit artwork. */
+/*
+ * One-time reveal for the thread → kolam → circuit divider: a soft-edged
+ * mask sweeps left to right. The resting state (no animation, or reduced
+ * motion) is fully open.
+ */
+.tkc-wipe {
+  transform: translateX(2700px);
+}
 @media (prefers-reduced-motion: no-preference) {
-  .tkc-reveal path,
-  .tkc-reveal circle {
-    stroke-dasharray: 1;
-    stroke-dashoffset: 1;
-    animation: tkc-draw 2.4s cubic-bezier(0.45, 0, 0.2, 1) 0.2s forwards;
-  }
-  .tkc-reveal .tkc-dot {
-    stroke-dasharray: none;
-    stroke-dashoffset: 0;
-    opacity: 0;
-    animation: tkc-fade 0.8s ease 1s forwards;
+  .tkc-wipe {
+    animation: tkc-wipe 4.2s 0.3s both;
   }
 }
-@keyframes tkc-draw {
-  to {
-    stroke-dashoffset: 0;
+@keyframes tkc-wipe {
+  0% {
+    transform: translateX(-300px);
+    animation-timing-function: cubic-bezier(0.37, 0, 0.63, 1);
   }
-}
-@keyframes tkc-fade {
-  to {
-    opacity: 1;
+  /* The artwork itself (first ~800px): threads, then kolam, then circuit. */
+  60% {
+    transform: translateX(900px);
+    animation-timing-function: cubic-bezier(0.4, 0, 1, 1);
+  }
+  /* Then open the rest of the long trail. */
+  100% {
+    transform: translateX(2700px);
   }
 }

@@ -9,7 +9,7 @@ export const home = {
     secondary: { label: "Discover Vastras", href: "/vastras" },
     images: {
       main: images.energyHero,
-      overlap: images.detailIvory,
+      overlap: images.fabricHero,
     },
   },
   purpose: {
@@ -29,7 +29,7 @@ export const home = {
         title: "Anaadi Vastras",
         body: "Handloom cotton, silk-cotton and silk.",
         cta: { label: "Discover the collection", href: "/vastras" },
-        image: images.sareeIvory,
+        image: images.fabricCard,
       },
     ],
   },

@@ -7,8 +7,14 @@
  *   2. Kolam: the same two strands zig-zag through a dot grid. At every
  *      turning point the strand crosses itself and loops around a dot, as in a
  *      sikku (kambi) kolam, so the strands interlace into a lattice.
- *   3. Circuit: after the last loop the strands straighten into traces with
- *      45° jogs and right angles, ending in open circular pads.
+ *   3. Transition: one softened arch with no loop, so the curves relax
+ *      gradually instead of snapping straight.
+ *   4. Circuit: the strands straighten into traces with 45° jogs and right
+ *      angles, ending in open circular pads.
+ *
+ * Strand 0 and strand 1 can be drawn in different colours (green and the
+ * logo yellow) so the interweaving reads; each circuit trace and pad records
+ * which strand it grows from.
  *
  * Everything is returned as plain SVG path data so the band can be scaled,
  * mirrored, rotated or cropped by the caller.
@@ -42,14 +48,14 @@ export interface Band {
   strands: string[];
   /** Fine companion fibres in the thread section. */
   fibres: string[];
-  /** Antique-gold fibres (restrained accent). */
-  goldFibres: string[];
-  /** Secondary circuit traces. */
-  traces: string[];
+  /** Accent fibres in the thread section (drawn in the accent colour). */
+  accentFibres: string[];
+  /** Secondary circuit traces, tagged with the strand they branch from. */
+  traces: { d: string; strand: number }[];
   /** Dot grid of the kolam. */
   dots: Point[];
-  /** Open circuit terminals. */
-  pads: Point[];
+  /** Open circuit terminals, tagged with the strand they end. */
+  pads: { at: Point; strand: number }[];
   /** Where the central trace leaves the circuit (for a continuing rule). */
   trailStart: Point;
   /** Total width actually drawn (excluding any trail). */
@@ -88,7 +94,11 @@ export function buildBand(options: BandOptions): Band {
   const x0 = threadLength + a / 2; // first turning point
   const turnX = (i: number) => x0 + i * a;
   const startCross: Point = [threadLength, cy];
-  const endCross: Point = [turnX(n - 1) + a / 2, cy];
+  // After the last loop: one softened arch, then the circuit begins.
+  const endCross: Point = [turnX(n) + a / 2, cy];
+  // Arch control height chosen so it leaves and arrives at 45°, matching
+  // the circuit's first jog.
+  const archControl = a / 2;
 
   // Offset from apex to loop centre so both legs are tangent to the loop.
   const centreOffset = R * norm;
@@ -118,9 +128,9 @@ export function buildBand(options: BandOptions): Band {
   const dots: Point[] = [];
   const strands: string[] = [];
   const fibres: string[] = [];
-  const goldFibres: string[] = [];
-  const traces: string[] = [];
-  const pads: Point[] = [];
+  const accentFibres: string[] = [];
+  const traces: { d: string; strand: number }[] = [];
+  const pads: { at: Point; strand: number }[] = [];
 
   // Kolam dots inside each lens of the lattice.
   for (let i = 0; i < n; i++) dots.push([turnX(i), cy]);
@@ -157,15 +167,17 @@ export function buildBand(options: BandOptions): Band {
       d += ` ${l.d}`;
       dir = (dir * -1) as -1 | 1;
     }
-    // After the last turn the strand heads away from its last apex.
-    endDirs.push(dir);
+    // Softened arch towards the next apex (no loop, no crossing), arriving
+    // at the end crossing heading the other way at 45°.
+    d += ` Q ${pt([turnX(n), cy + dir * archControl])} ${pt(endCross)}`;
+    endDirs.push((dir * -1) as -1 | 1);
     strands.push(d);
   }
 
-  // A single loose gold fibre in the thread section.
+  // A single loose accent fibre in the thread section.
   if (threadLength > 50) {
     const g0: Point = [0, cy - 1 + j(1)];
-    goldFibres.push(
+    accentFibres.push(
       `M ${pt(g0)} C ${pt([threadLength * 0.25, cy - 5])} ${pt([threadLength * 0.45, cy + 3])} ${pt([
         threadLength * 0.68,
         cy - 2.5,
@@ -197,7 +209,12 @@ export function buildBand(options: BandOptions): Band {
     const pts = dir === -1 ? upperMain : lowerMain;
     strands[s] += " " + pts.map((p) => `L ${pt(p)}`).join(" ");
   });
-  pads.push(upperMain[upperMain.length - 1], lowerMain[lowerMain.length - 1]);
+  const upper = endDirs.indexOf(-1);
+  const lowerStrand = 1 - upper;
+  pads.push(
+    { at: upperMain[upperMain.length - 1], strand: upper },
+    { at: lowerMain[lowerMain.length - 1], strand: lowerStrand },
+  );
 
   // Central trace branching from the upper trace; it is the one that may
   // continue as a long rule (trail).
@@ -207,7 +224,7 @@ export function buildBand(options: BandOptions): Band {
     [bx + step, ey],
     [ex + L, ey],
   ];
-  traces.push(route(central));
+  traces.push({ d: route(central), strand: upper });
   const trailStart: Point = [ex + L, ey];
 
   if (branches) {
@@ -217,8 +234,8 @@ export function buildBand(options: BandOptions): Band {
       [lx + 2 * step, ey + 3 * step],
       [ex + L * 0.3 + 2 * step, ey + 3 * step],
     ];
-    traces.push(route(lower));
-    pads.push(lower[lower.length - 1]);
+    traces.push({ d: route(lower), strand: lowerStrand });
+    pads.push({ at: lower[lower.length - 1], strand: lowerStrand });
 
     const ux = ex + L * 0.55;
     const up: Point[] = [
@@ -226,14 +243,14 @@ export function buildBand(options: BandOptions): Band {
       [ux + step, ey - 3 * step],
       [ex + L * 0.62 + step, ey - 3 * step],
     ];
-    traces.push(route(up));
-    pads.push(up[up.length - 1]);
+    traces.push({ d: route(up), strand: upper });
+    pads.push({ at: up[up.length - 1], strand: upper });
   }
 
   return {
     strands,
     fibres,
-    goldFibres,
+    accentFibres,
     traces,
     dots,
     pads,

@@ -29,11 +29,6 @@ export function FeatureCard({
           className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]"
           style={{ objectPosition: image.focus }}
         />
-        {image.temporary && (
-          <span className="absolute bottom-0 left-0 bg-paper/90 px-2 py-1 text-xs text-muted">
-            Illustrative image
-          </span>
-        )}
       </div>
       <div className="flex flex-1 flex-col p-6 md:p-8">
         <p className="eyebrow eyebrow-rule">{eyebrow}</p>

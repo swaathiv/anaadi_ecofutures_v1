@@ -42,6 +42,11 @@ SAREE_CROPS = [
 MOCKUP_CROPS = [
     ("temp-energy-hero.jpg", (432, 133, 747, 492)),
     ("temp-energy-card.jpg", (35, 814, 435, 1121)),
+    # Draped ivory fabric with green/gold border (homepage hero). Its top-left
+    # ~60% x 65% sits behind the main hero image, matching the mockup.
+    ("temp-fabric-hero.jpg", (573, 290, 865, 623)),
+    # Folded ivory fabrics with green/gold borders (homepage Vastras card).
+    ("temp-fabric-card.jpg", (462, 814, 865, 1121)),
 ]
 
 # Original logo: crop away the empty padding only.

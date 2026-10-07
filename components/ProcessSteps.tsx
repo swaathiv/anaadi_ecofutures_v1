@@ -9,7 +9,7 @@ export function ProcessSteps({ steps }: { steps: { title: string; body: string }
           {/* Small circuit-pad marker on the rule. */}
           <span
             aria-hidden="true"
-            className="absolute -top-[5px] left-0 h-[9px] w-[9px] rounded-full border border-gold bg-paper"
+            className="absolute -top-[5px] left-0 h-[9px] w-[9px] rounded-full border border-logo-yellow bg-paper"
           />
           <p className="font-label text-sm font-semibold tracking-[0.14em] text-muted">
             <span className="sr-only">Step </span>0{i + 1}

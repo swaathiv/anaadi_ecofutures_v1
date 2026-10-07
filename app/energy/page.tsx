@@ -46,9 +46,6 @@ export default function EnergyPage() {
                 />
               </div>
             </div>
-            {hero.image.temporary && (
-              <figcaption className="mt-3 text-[0.8125rem] text-muted">Illustrative imagery.</figcaption>
-            )}
           </figure>
         }
       />
