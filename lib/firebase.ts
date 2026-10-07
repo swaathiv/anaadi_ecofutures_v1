@@ -100,7 +100,10 @@ export function errorMessage(error: unknown) {
   // deployed, blocked, or a network/CORS failure); anything longer is our
   // own server message.
   if (code === "functions/internal") {
-    return message && message !== "internal"
+    // "[0]" = the browser got no readable response (function not deployed,
+    // not publicly callable, crashed on start, or a network/CORS failure).
+    const unreachable = !message || message === "internal" || /\[0\]$/.test(message);
+    return !unreachable
       ? `${message} Please try again or contact us.`
       : "We could not reach our ordering service (functions/internal). It may not be set up yet. Please contact us to order.";
   }
