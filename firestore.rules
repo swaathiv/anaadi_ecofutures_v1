@@ -47,9 +47,12 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Admins can see the admin list; changes go through the setAdmin
+    // function (or the Firebase console for the very first admin).
     match /admins/{uid} {
-      allow get: if signedIn() && request.auth.uid == uid;
-      allow list, write: if false;
+      allow get: if signedIn() && (request.auth.uid == uid || isAdmin());
+      allow list: if isAdmin();
+      allow write: if false;
     }
 
     match /{document=**} {

@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
 
 import { useCart } from "@/components/cart/CartProvider";
-import { nav } from "@/lib/content/site";
+import { nav, ordering } from "@/lib/content/site";
 
 const linkBase =
   "relative inline-flex min-h-11 items-center font-label text-[0.8125rem] font-semibold uppercase tracking-[0.14em] text-forest transition-colors hover:text-brand";
@@ -84,6 +84,7 @@ export function SiteHeader({ logo }: { logo: React.ReactNode }) {
                 Account
               </Link>
             </li>
+            {ordering.enabled && (
             <li>
               <Link
                 href="/cart"
@@ -94,13 +95,16 @@ export function SiteHeader({ logo }: { logo: React.ReactNode }) {
                 {bagLabel}
               </Link>
             </li>
+            )}
           </ul>
         </nav>
 
         <div className="flex items-center gap-2 lg:hidden">
-          <Link href="/cart" aria-label={bagAria} className={`${linkBase} px-2`}>
-            {bagLabel}
-          </Link>
+          {ordering.enabled && (
+            <Link href="/cart" aria-label={bagAria} className={`${linkBase} px-2`}>
+              {bagLabel}
+            </Link>
+          )}
           <button
             ref={buttonRef}
             type="button"

@@ -3,7 +3,28 @@
 import Link from "next/link";
 import { useState } from "react";
 
+import { mailto, ordering } from "@/lib/content/site";
+
 import { useCart } from "./CartProvider";
+
+/** Shown instead of ordering controls while online ordering is switched off. */
+export function OrderingClosed({ name }: { name?: string }) {
+  const href = mailto(name ? `Order enquiry: ${name}` : "Order enquiry");
+  return (
+    <p className="text-ink">
+      Online ordering opens soon.
+      {href && (
+        <>
+          {" "}
+          <a href={href} className="link-quiet">
+            Write to us to order
+          </a>
+          .
+        </>
+      )}
+    </p>
+  );
+}
 
 export function AddToBag({
   slug,
@@ -21,6 +42,7 @@ export function AddToBag({
   const { add, items, ready } = useCart();
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
+  if (!ordering.enabled) return <OrderingClosed name={name} />;
   const inBag = items.find((i) => i.slug === slug)?.quantity ?? 0;
   const atMax = inBag >= max;
 

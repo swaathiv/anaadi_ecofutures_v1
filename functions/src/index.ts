@@ -8,13 +8,21 @@
 import { randomBytes } from "node:crypto";
 
 import { initializeApp } from "firebase-admin/app";
+import { getAuth, type UserRecord } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
 import { setGlobalOptions } from "firebase-functions/v2";
 import { HttpsError, onCall, type CallableRequest } from "firebase-functions/v2/https";
 
 import { quote } from "../../lib/pricing";
-import { ORDER_STATUSES, type Order, type OrderStatus, type Profile } from "../../lib/types";
-import { parseDelivery } from "../../lib/validation";
+import {
+  ORDER_STATUSES,
+  REFERRAL_SOURCES,
+  type AdminEntry,
+  type Order,
+  type OrderStatus,
+  type Profile,
+} from "../../lib/types";
+import { isEmail, normaliseEmail, parseDelivery, toE164India } from "../../lib/validation";
 
 initializeApp();
 const db = getFirestore();
@@ -63,6 +71,15 @@ export const placeOrder = onCall(async (req) => {
   const notes = typeof data.notes === "string" ? data.notes.trim().slice(0, 500) : "";
   const saveAddress = data.saveAddress === true;
 
+  // Optional "How did you hear about us?" — only known options are stored.
+  const ref = asObject(data.referral);
+  const source = typeof ref.source === "string" ? ref.source : "";
+  let referral: Order["referral"];
+  if ((REFERRAL_SOURCES as readonly string[]).includes(source)) {
+    const detail = typeof ref.detail === "string" ? ref.detail.trim().slice(0, 120) : "";
+    referral = detail ? { source, detail } : { source };
+  }
+
   const profileSnap = await db.doc(`users/${uid}`).get();
   const profile = profileSnap.data() as Profile | undefined;
   if (!profile?.name) throw new HttpsError("failed-precondition", "Please complete your profile first.");
@@ -93,6 +110,7 @@ export const placeOrder = onCall(async (req) => {
       lines: priced.lines,
       delivery: stripUndefined(delivery),
       ...(notes ? { notes } : {}),
+      ...(referral ? { referral } : {}),
       subtotal: priced.subtotal,
       shipping: priced.shipping,
       codFee: priced.codFee,
@@ -160,6 +178,57 @@ export const updateOrderStatus = onCall(async (req) => {
     });
   });
   return { ok: true };
+});
+
+/**
+ * Add or remove an admin by email or Indian mobile number. Admins only.
+ * The person must already have signed in to the site once (so they have an
+ * account). The last remaining admin cannot be removed.
+ */
+export const setAdmin = onCall(async (req) => {
+  const uid = requireUid(req);
+  if (!(await isAdmin(uid))) throw new HttpsError("permission-denied", "Admins only.");
+  const data = asObject(req.data);
+  const action = data.action === "remove" ? "remove" : "add";
+  const identifier = typeof data.identifier === "string" ? data.identifier.trim() : "";
+
+  let target: UserRecord;
+  try {
+    if (isEmail(normaliseEmail(identifier))) {
+      target = await getAuth().getUserByEmail(normaliseEmail(identifier));
+    } else {
+      const phone = toE164India(identifier);
+      if (!phone) throw new HttpsError("invalid-argument", "Enter an email address or a 10-digit mobile number.");
+      target = await getAuth().getUserByPhoneNumber(phone);
+    }
+  } catch (error) {
+    if (error instanceof HttpsError) throw error;
+    throw new HttpsError(
+      "not-found",
+      "No account found. Ask them to sign in to the website once, then try again.",
+    );
+  }
+
+  const ref = db.doc(`admins/${target.uid}`);
+  if (action === "remove") {
+    const count = (await db.collection("admins").count().get()).data().count;
+    if (count <= 1) throw new HttpsError("failed-precondition", "You cannot remove the last admin.");
+    await ref.delete();
+    return { ok: true, uid: target.uid };
+  }
+
+  const profile = (await db.doc(`users/${target.uid}`).get()).data() as Profile | undefined;
+  const entry: AdminEntry = {
+    role: "admin",
+    addedBy: uid,
+    addedAt: new Date().toISOString(),
+  };
+  const name = profile?.name ?? target.displayName;
+  if (name) entry.name = name;
+  if (target.email) entry.email = target.email;
+  if (target.phoneNumber) entry.phone = target.phoneNumber;
+  await ref.set(entry, { merge: true });
+  return { ok: true, uid: target.uid };
 });
 
 /** Firestore rejects `undefined` values. */

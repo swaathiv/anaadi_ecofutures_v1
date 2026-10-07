@@ -41,6 +41,8 @@ export interface Order {
   lines: OrderLine[];
   delivery: DeliveryDetails;
   notes?: string;
+  /** Answer to "How did you hear about us?" (optional). */
+  referral?: { source: string; detail?: string };
   subtotal: number;
   shipping: number;
   codFee: number;
@@ -53,6 +55,32 @@ export interface Order {
   createdAt: string;
   updatedAt: string;
 }
+
+/** Firestore: admins/{uid}. Presence of the document grants admin access. */
+export interface AdminEntry {
+  name?: string;
+  email?: string;
+  phone?: string;
+  role?: string;
+  addedBy?: string;
+  addedAt?: string;
+}
+
+/**
+ * "How did you hear about us?" options. Edit freely; the placeOrder function
+ * accepts only these values.
+ */
+export const REFERRAL_SOURCES = [
+  "Friend or family",
+  "Instagram",
+  "Facebook",
+  "WhatsApp",
+  "YouTube",
+  "Google search",
+  "Workshop or event",
+  "Goshala or farm visit",
+  "Other",
+] as const;
 
 export const ORDER_STATUSES: OrderStatus[] = ["placed", "confirmed", "shipped", "delivered", "cancelled"];
 

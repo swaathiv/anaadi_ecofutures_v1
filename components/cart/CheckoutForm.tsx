@@ -7,14 +7,20 @@ import { useState } from "react";
 import { Field, FormAlert } from "@/components/forms/Field";
 import { getProduct } from "@/lib/catalog";
 import { callable, errorMessage } from "@/lib/firebase";
-import type { DeliveryDetails } from "@/lib/types";
+import { REFERRAL_SOURCES, type DeliveryDetails } from "@/lib/types";
 import { INDIAN_STATES, parseDelivery, type FieldErrors } from "@/lib/validation";
 
 import { QuoteTotals } from "./BagView";
 import { useCart } from "./CartProvider";
 
 const placeOrder = callable<
-  { items: { slug: string; quantity: number }[]; delivery: DeliveryDetails; notes: string; saveAddress: boolean },
+  {
+    items: { slug: string; quantity: number }[];
+    delivery: DeliveryDetails;
+    notes: string;
+    saveAddress: boolean;
+    referral?: { source: string; detail?: string };
+  },
   { id: string }
 >("placeOrder");
 
@@ -28,6 +34,7 @@ export function CheckoutForm({ saved, fallbackName, fallbackPhone }: {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string>();
   const [e, setFieldErrors] = useState<FieldErrors>({});
+  const [referralSource, setReferralSource] = useState("");
   const v = (k: keyof DeliveryDetails | "notes") => (k === "notes" ? "" : (saved?.[k] ?? ""));
 
   if (!ready) return <p className="text-muted">Loading your bag…</p>;
@@ -66,6 +73,14 @@ export function CheckoutForm({ saved, fallbackName, fallbackPhone }: {
             delivery,
             notes: values.notes ?? "",
             saveAddress: values.saveAddress === "on",
+            ...(values.referralSource
+              ? {
+                  referral: {
+                    source: values.referralSource,
+                    ...(values.referralDetail?.trim() ? { detail: values.referralDetail.trim() } : {}),
+                  },
+                }
+              : {}),
           });
           router.push(`/account/order?id=${encodeURIComponent(id)}&placed=1`);
         } catch (err) {
@@ -128,6 +143,31 @@ export function CheckoutForm({ saved, fallbackName, fallbackPhone }: {
             <textarea id={id} name="notes" rows={3} maxLength={500} className="field-input" defaultValue={v("notes")} />
           )}
         </Field>
+        <Field label="How did you hear about us?" name="referralSource" optional>
+          {({ id }) => (
+            <select
+              id={id}
+              name="referralSource"
+              className="field-input"
+              value={referralSource}
+              onChange={(ev) => setReferralSource(ev.target.value)}
+            >
+              <option value="">Choose…</option>
+              {REFERRAL_SOURCES.map((r) => (
+                <option key={r}>{r}</option>
+              ))}
+            </select>
+          )}
+        </Field>
+        {referralSource && (
+          <Field
+            label={referralSource === "Other" ? "Please tell us where" : "Anything to add?"}
+            name="referralDetail"
+            optional
+            maxLength={120}
+            placeholder={referralSource === "Friend or family" ? "e.g. their name" : undefined}
+          />
+        )}
         <label className="flex min-h-11 items-center gap-3">
           <input type="checkbox" name="saveAddress" defaultChecked className="h-5 w-5 accent-[var(--brand-green)]" />
           <span>Save this address to my account</span>

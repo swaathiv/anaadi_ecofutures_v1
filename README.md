@@ -65,14 +65,21 @@ commands on your computer.
    ```
    The first functions deploy can take several minutes and may ask to
    enable some Google Cloud APIs; answer yes.
-8. **Make yourself admin.** Open the site at the `…web.app` address the
-   deploy prints, sign in, and go to `/admin/orders`; the page shows your user
-   ID. In the console: Firestore → *Start collection* `admins` → Document ID
-   = that user ID → add any field (e.g. `role` = `owner`) → Save. Reload.
-9. **Test on the `…web.app` address**: sign in with your mobile, order one
+8. **Make yourself the first admin** (one time only). Open the site at the
+   `…web.app` address, sign in, and go to `/admin/orders`; the page shows
+   your user ID. In the console: Firestore → *Start collection* `admins` →
+   Document ID = that user ID → add any field (e.g. `role` = `owner`) →
+   Save. Reload. From then on, add or remove other admins in
+   `/admin/orders` → **Admins** (they must have signed in to the site once).
+9. **Switch ordering on.** In `.env.production` change
+   `NEXT_PUBLIC_ORDERING_ENABLED=false` to `true`, then `npm run deploy:site`.
+   While it is `false`, products show "Online ordering opens soon" with a
+   link to email you, and the bag and checkout are closed. Without the
+   functions deployed, placing an order fails with `functions/internal`.
+10. **Test on the `…web.app` address**: sign in with your mobile, order one
    varatti, confirm it in `/admin/orders`, watch the status change on the
    order page, then cancel or mark it delivered.
-10. **Move the domain.** Hosting → *Add custom domain* →
+11. **Move the domain.** Hosting → *Add custom domain* →
     `anaadiecofutures.com` (and `www`). Firebase shows DNS records; enter them
     at your domain registrar, replacing the GitHub Pages records. It can take
     up to a few hours, and Firebase issues the HTTPS certificate itself.
@@ -81,6 +88,20 @@ commands on your computer.
 Afterwards, `npm run deploy:site` publishes page changes only; `npm run
 deploy` publishes everything. **After changing a price in `lib/pricing.ts`,
 run the full `npm run deploy`** so the site and the order function agree.
+
+## Admins and order data
+
+- **On the website** (`/admin/orders`): admins see every order live, change
+  status with a note for the customer, filter by status, and **Download
+  CSV** (opens in Excel/Google Sheets; includes delivery details, items,
+  totals and the "How did you hear about us?" answer). The **Admins** tab
+  adds or removes admins by email or mobile number; the last admin cannot
+  be removed.
+- **In the Firebase console** (raw database): add people under Project
+  settings → *Users and permissions*. The *Viewer* role can browse
+  Firestore (orders, users) without changing anything; *Editor*/*Owner* can
+  change data and settings. Console access is separate from website admin
+  access.
 
 ## Run it locally
 
@@ -106,7 +127,9 @@ Phone sign-in locally: enter any 10-digit mobile, then read the code at
    mobile, 6-digit PIN, state list) and can be saved for next time.
 3. The browser sends only *which* products and how many. The `placeOrder`
    function looks up prices in `lib/pricing.ts`, works out shipping (₹80,
-   free from ₹1,000) and the ₹50 COD fee, and saves the order with those
+   free from ₹1,000) and the ₹50 COD fee, stores the optional "How did you
+   hear about us?" answer (options in `REFERRAL_SOURCES`, `lib/types.ts`),
+   and saves the order with those
    prices fixed. Later price changes do not touch existing orders. It also
    limits each customer to 10 orders per 24 hours.
 4. Status: `placed → confirmed → shipped → delivered` (or `cancelled`).

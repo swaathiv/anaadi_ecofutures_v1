@@ -4,8 +4,10 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { formatINR, getProduct, quote } from "@/lib/catalog";
+import { ordering } from "@/lib/content/site";
 import { ArrowRight } from "@/components/ui/Icons";
 
+import { OrderingClosed } from "./AddToBag";
 import { useCart } from "./CartProvider";
 
 export function QuoteTotals({ items }: { items: { slug: string; quantity: number }[] }) {
@@ -40,6 +42,7 @@ export function QuoteTotals({ items }: { items: { slug: string; quantity: number
 export function BagView() {
   const { items, ready, setQuantity, remove } = useCart();
 
+  if (!ordering.enabled) return <OrderingClosed />;
   if (!ready) return <p className="text-muted">Loading your bag…</p>;
 
   const lines = items

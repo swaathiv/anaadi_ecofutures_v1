@@ -106,6 +106,26 @@ await check("customer cannot change order status", () =>
   rejectsWith(call("updateOrderStatus", { orderId, status: "delivered" }), "functions/permission-denied"),
 );
 await check("customer cannot make themselves admin", () => denied(setDoc(doc(db, "admins", uidA), { role: "owner" })));
+await check("customer cannot add admins through the function", () =>
+  rejectsWith(call("setAdmin", { identifier: "a@example.com", action: "add" }), "functions/permission-denied"),
+);
+await check("customer cannot list admins", () => denied(getDocs(collection(db, "admins"))));
+await check("valid referral answer is stored; unknown ones are dropped", async () => {
+  const good = await call("placeOrder", {
+    items: [{ slug: "varatti-1kg", quantity: 1 }],
+    delivery,
+    referral: { source: "Instagram", detail: "  saw a reel  " },
+  });
+  const bad = await call("placeOrder", {
+    items: [{ slug: "varatti-1kg", quantity: 1 }],
+    delivery,
+    referral: { source: "<script>", detail: "x" },
+  });
+  const g = (await getDoc(doc(db, "orders", good.id))).data();
+  const b = (await getDoc(doc(db, "orders", bad.id))).data();
+  assert.deepEqual(g.referral, { source: "Instagram", detail: "saw a reel" });
+  assert.equal(b.referral, undefined);
+});
 
 // Customer B
 await signOut(auth);
@@ -134,6 +154,26 @@ await check("admin can read every order", async () => {
   assert.ok(snap.size >= 2);
 });
 await check("admin can confirm an order", () => call("updateOrderStatus", { orderId, status: "confirmed", note: "Called" }));
+await check("admin can list admins", async () => {
+  const snap = await getDocs(collection(db, "admins"));
+  assert.equal(snap.size, 1);
+});
+await check("admin cannot remove the last admin", () =>
+  rejectsWith(call("setAdmin", { identifier: "b@example.com", action: "remove" }), "functions/failed-precondition"),
+);
+await check("adding an unknown person explains they must sign in first", () =>
+  rejectsWith(call("setAdmin", { identifier: "nobody@example.com", action: "add" }), "functions/not-found"),
+);
+await check("admin can add another admin by email", async () => {
+  await call("setAdmin", { identifier: "A@Example.com", action: "add" });
+  const entry = (await getDoc(doc(db, "admins", uidA))).data();
+  assert.equal(entry.email, "a@example.com");
+  assert.equal(entry.name, "Customer A");
+});
+await check("admin can remove an admin when another remains", async () => {
+  await call("setAdmin", { identifier: "a@example.com", action: "remove" });
+  assert.equal((await getDoc(doc(db, "admins", uidA))).exists(), false);
+});
 
 await signOut(auth);
 const { signInWithEmailAndPassword } = await import("firebase/auth");

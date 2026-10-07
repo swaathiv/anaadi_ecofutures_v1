@@ -58,3 +58,13 @@ export const enquiryTopics = [
   "Research collaboration",
   "Anaadi Vastras enquiry",
 ] as const;
+
+/**
+ * Online ordering switch. Set NEXT_PUBLIC_ORDERING_ENABLED=false (see
+ * .env.production) until the order Cloud Functions are deployed, which needs
+ * the Blaze plan. When off, products show "Online ordering opens soon" with
+ * a link to write to us, and the bag and checkout are closed.
+ */
+export const ordering = {
+  enabled: process.env.NEXT_PUBLIC_ORDERING_ENABLED !== "false",
+};
