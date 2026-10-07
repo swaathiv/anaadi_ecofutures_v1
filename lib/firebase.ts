@@ -96,6 +96,14 @@ export function errorMessage(error: unknown) {
   if (map[code]) return map[code];
   const message = (error as { message?: string })?.message;
   // Callable functions return our own HttpsError messages.
-  if (code.startsWith("functions/") && code !== "functions/internal" && message) return message;
+  // A bare "internal" means the function could not be reached at all (not
+  // deployed, blocked, or a network/CORS failure); anything longer is our
+  // own server message.
+  if (code === "functions/internal") {
+    return message && message !== "internal"
+      ? `${message} Please try again or contact us.`
+      : "We could not reach our ordering service (functions/internal). It may not be set up yet. Please contact us to order.";
+  }
+  if (code.startsWith("functions/") && message) return message;
   return code ? `Something went wrong (${code}). Please try again.` : "Something went wrong. Please try again.";
 }

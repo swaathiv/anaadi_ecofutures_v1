@@ -10,8 +10,8 @@ import { randomBytes } from "node:crypto";
 import { initializeApp } from "firebase-admin/app";
 import { getAuth, type UserRecord } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
-import { setGlobalOptions } from "firebase-functions/v2";
-import { HttpsError, onCall, type CallableRequest } from "firebase-functions/v2/https";
+import { logger, setGlobalOptions } from "firebase-functions/v2";
+import { HttpsError, onCall as rawOnCall, type CallableRequest } from "firebase-functions/v2/https";
 
 import { quote } from "../../lib/pricing";
 import {
@@ -30,6 +30,24 @@ const db = getFirestore();
 // Mumbai, next to the Firestore database. Keep in sync with
 // NEXT_PUBLIC_FIREBASE_FUNCTIONS_REGION on the website.
 setGlobalOptions({ region: "asia-south1", maxInstances: 5 });
+
+/**
+ * onCall with error reporting: expected errors (HttpsError) pass through;
+ * anything else is logged in full (Firebase console → Functions → Logs) and
+ * returned as a readable message instead of a bare "internal".
+ */
+function onCall<T>(name: string, handler: (req: CallableRequest) => Promise<T>) {
+  return rawOnCall(async (req) => {
+    try {
+      return await handler(req);
+    } catch (error) {
+      if (error instanceof HttpsError) throw error;
+      logger.error(`${name} failed`, error);
+      const detail = error instanceof Error ? error.message.slice(0, 160) : String(error).slice(0, 160);
+      throw new HttpsError("internal", `Server error in ${name}: ${detail}`);
+    }
+  });
+}
 
 const ID_ALPHABET = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ"; // 32 chars: no bias from % 32
 function newOrderId() {
@@ -53,7 +71,7 @@ const asObject = (v: unknown): Record<string, unknown> =>
 
 const MAX_ORDERS_PER_DAY = 10;
 
-export const placeOrder = onCall(async (req) => {
+export const placeOrder = onCall("placeOrder", async (req) => {
   const uid = requireUid(req);
   const data = asObject(req.data);
 
@@ -84,16 +102,23 @@ export const placeOrder = onCall(async (req) => {
   const profile = profileSnap.data() as Profile | undefined;
   if (!profile?.name) throw new HttpsError("failed-precondition", "Please complete your profile first.");
 
-  // Simple abuse guard.
-  const since = new Date(Date.now() - 864e5).toISOString();
-  const recent = await db
-    .collection("orders")
-    .where("userId", "==", uid)
-    .where("createdAt", ">=", since)
-    .count()
-    .get();
-  if (recent.data().count >= MAX_ORDERS_PER_DAY) {
-    throw new HttpsError("resource-exhausted", "Too many orders today. Please contact us.");
+  // Simple abuse guard. It needs a Firestore index (firestore.indexes.json);
+  // if the index is missing or still building, log it and let the order
+  // through rather than blocking a genuine customer.
+  try {
+    const since = new Date(Date.now() - 864e5).toISOString();
+    const recent = await db
+      .collection("orders")
+      .where("userId", "==", uid)
+      .where("createdAt", ">=", since)
+      .count()
+      .get();
+    if (recent.data().count >= MAX_ORDERS_PER_DAY) {
+      throw new HttpsError("resource-exhausted", "Too many orders today. Please contact us.");
+    }
+  } catch (error) {
+    if (error instanceof HttpsError) throw error;
+    logger.warn("Order rate check skipped (index missing or building?)", error);
   }
 
   const now = new Date().toISOString();
@@ -134,7 +159,7 @@ export const placeOrder = onCall(async (req) => {
   throw new HttpsError("internal", "Could not create the order. Please try again.");
 });
 
-export const cancelOrder = onCall(async (req) => {
+export const cancelOrder = onCall("cancelOrder", async (req) => {
   const uid = requireUid(req);
   const id = String(asObject(req.data).orderId ?? "");
   const ref = db.doc(`orders/${id}`);
@@ -155,7 +180,7 @@ export const cancelOrder = onCall(async (req) => {
   return { ok: true };
 });
 
-export const updateOrderStatus = onCall(async (req) => {
+export const updateOrderStatus = onCall("updateOrderStatus", async (req) => {
   const uid = requireUid(req);
   if (!(await isAdmin(uid))) throw new HttpsError("permission-denied", "Admins only.");
   const data = asObject(req.data);
@@ -185,7 +210,7 @@ export const updateOrderStatus = onCall(async (req) => {
  * The person must already have signed in to the site once (so they have an
  * account). The last remaining admin cannot be removed.
  */
-export const setAdmin = onCall(async (req) => {
+export const setAdmin = onCall("setAdmin", async (req) => {
   const uid = requireUid(req);
   if (!(await isAdmin(uid))) throw new HttpsError("permission-denied", "Admins only.");
   const data = asObject(req.data);
