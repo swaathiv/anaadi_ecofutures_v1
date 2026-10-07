@@ -2,9 +2,10 @@
  * Product catalogue and order pricing rules.
  *
  * Only supplied facts are recorded here:
- * - Sarees: the four supplied photographs. Fabric, dimensions, fibre
- *   composition, care and price were NOT supplied, so they are left
- *   undefined and the UI shows "confirmed before dispatch" instead.
+ * - Sarees: the four supplied photographs and the supplied price (₹1,500,
+ *   in lib/pricing.ts). Fabric, dimensions, fibre composition and care were
+ *   NOT supplied, so they are left undefined and the UI says they are
+ *   confirmed before dispatch.
  * - Varatti: name, description and prices from the previous
  *   anaadiecofutures.com shop.
  *

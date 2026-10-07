@@ -10,7 +10,7 @@
  * placed at.
  *
  * Prices are whole rupees. `price: null` = confirmed with the customer
- * before dispatch (sarees: no price supplied yet).
+ * before dispatch.
  */
 
 export interface PriceEntry {
@@ -20,10 +20,11 @@ export interface PriceEntry {
 }
 
 export const priceList: Record<string, PriceEntry> = {
-  "magenta-peacock-blue-pallu": { name: "Magenta with Peacock-Blue Pallu", price: null, maxPerOrder: 1 },
-  "orange-peacock-blue-pallu": { name: "Orange with Peacock-Blue Pallu", price: null, maxPerOrder: 1 },
-  "ivory-magenta-pallu": { name: "Ivory with Magenta Pallu", price: null, maxPerOrder: 1 },
-  "coral-peacock-blue-pallu": { name: "Coral with Peacock-Blue Pallu", price: null, maxPerOrder: 1 },
+  // Sarees: ₹1,500 each (supplied price).
+  "magenta-peacock-blue-pallu": { name: "Magenta with Peacock-Blue Pallu", price: 1500, maxPerOrder: 1 },
+  "orange-peacock-blue-pallu": { name: "Orange with Peacock-Blue Pallu", price: 1500, maxPerOrder: 1 },
+  "ivory-magenta-pallu": { name: "Ivory with Magenta Pallu", price: 1500, maxPerOrder: 1 },
+  "coral-peacock-blue-pallu": { name: "Coral with Peacock-Blue Pallu", price: 1500, maxPerOrder: 1 },
   // Varatti prices from the previous anaadiecofutures.com shop.
   "varatti-1kg": { name: "Varatti — 1 kg", price: 150, maxPerOrder: 20 },
   "varatti-5kg": { name: "Varatti — 5 kg", price: 700, maxPerOrder: 20 },

@@ -91,7 +91,8 @@ await check("quantity above the per-order limit is clamped", async () => {
   const res = await call("placeOrder", { items: [{ slug: "ivory-magenta-pallu", quantity: 50 }], delivery });
   const order = (await getDoc(doc(db, "orders", res.id))).data();
   assert.equal(order.lines[0].quantity, 1);
-  assert.equal(order.hasUnpricedItems, true);
+  assert.equal(order.lines[0].unitPrice, 1500);
+  assert.equal(order.shipping, 0); // ₹1,500 is above the free-shipping threshold
 });
 await check("unknown products are refused", () =>
   rejectsWith(call("placeOrder", { items: [{ slug: "gold-bar", quantity: 1 }], delivery }), "functions/invalid-argument"),

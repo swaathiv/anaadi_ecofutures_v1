@@ -41,7 +41,7 @@ export const vastras = {
   collection: {
     eyebrow: "The collection",
     title: "Sarees from the loom.",
-    body: "Each saree is photographed as it is. Fabric, measurements and price are confirmed with you before dispatch, and every order is cash on delivery.",
+    body: "Each saree is ₹1,500, with free shipping. Fabric and measurements are confirmed with you before dispatch, and every order is cash on delivery.",
   },
   care: {
     eyebrow: "Craft and care",

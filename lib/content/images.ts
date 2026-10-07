@@ -13,14 +13,17 @@ import tempEnergyHero from "@/assets/images/temp-energy-hero.jpg";
 import tempEnergyCard from "@/assets/images/temp-energy-card.jpg";
 import tempFabricHero from "@/assets/images/temp-fabric-hero.jpg";
 import tempFabricCard from "@/assets/images/temp-fabric-card.jpg";
-import sareeMagenta from "@/assets/images/saree-magenta-peacock-blue.jpg";
-import sareeOrange from "@/assets/images/saree-orange-peacock-blue.jpg";
-import sareeIvory from "@/assets/images/saree-ivory-magenta.jpg";
-import sareeCoral from "@/assets/images/saree-coral-peacock-blue.jpg";
-import detailMagenta from "@/assets/images/detail-magenta-pallu.jpg";
-import detailOrange from "@/assets/images/detail-orange-pallu.jpg";
-import detailIvory from "@/assets/images/detail-ivory-pallu.jpg";
-import detailCoral from "@/assets/images/detail-coral-pallu.jpg";
+// Saree storefront images: the supplied photos with the background replaced
+// by a plain ivory backdrop (scripts/make-storefront.py). The sarees
+// themselves are unaltered.
+import sareeMagenta from "@/assets/images/store-magenta-peacock-blue.jpg";
+import sareeOrange from "@/assets/images/store-orange-peacock-blue.jpg";
+import sareeIvory from "@/assets/images/store-ivory-magenta.jpg";
+import sareeCoral from "@/assets/images/store-coral-peacock-blue.jpg";
+import detailMagenta from "@/assets/images/store-detail-magenta-peacock-blue.jpg";
+import detailOrange from "@/assets/images/store-detail-orange-peacock-blue.jpg";
+import detailIvory from "@/assets/images/store-detail-ivory-magenta.jpg";
+import detailCoral from "@/assets/images/store-detail-coral-peacock-blue.jpg";
 
 export interface SiteImage {
   src: StaticImageData;
@@ -61,22 +64,22 @@ export const images = {
   },
   sareeMagenta: {
     src: sareeMagenta,
-    alt: "Magenta saree with a peacock-blue pallu woven with peacocks, vines and flowers, laid flat on a wooden table.",
+    alt: "Magenta saree with a peacock-blue pallu woven with peacocks, vines and flowers, folded on a plain ivory backdrop.",
     focus: "45% 45%",
   },
   sareeOrange: {
     src: sareeOrange,
-    alt: "Orange saree with a peacock-blue pallu and a green band, woven with peacocks and vines, laid flat on a wooden table.",
+    alt: "Orange saree with a peacock-blue pallu and a green band, woven with peacocks and vines, folded on a plain ivory backdrop.",
     focus: "45% 45%",
   },
   sareeIvory: {
     src: sareeIvory,
-    alt: "Ivory saree with a magenta pallu and pale pink band, woven with peacocks and paisleys, laid diagonally on a wooden table.",
+    alt: "Ivory saree with a magenta pallu and pale pink band, woven with peacocks and paisleys, folded on a plain ivory backdrop.",
     focus: "55% 40%",
   },
   sareeCoral: {
     src: sareeCoral,
-    alt: "Coral-red saree with a peacock-blue pallu woven with peacocks and vines, laid flat on a wooden table.",
+    alt: "Coral-red saree with a peacock-blue pallu woven with peacocks and vines, folded on a plain ivory backdrop.",
     focus: "45% 45%",
   },
   detailMagenta: {

@@ -8,10 +8,7 @@ Usage:
 
 <source-dir> must contain:
     1.webp  approved homepage mockup (used ONLY for temporary energy imagery)
-    2.jpg   magenta saree, peacock-blue pallu
-    3.jpg   orange saree, peacock-blue pallu
-    4.jpg   ivory saree, magenta pallu
-    5.jpg   coral-red saree, peacock-blue pallu
+    (2.jpg–5.jpg, the saree photos, are used by scripts/make-storefront.py)
 The original logo is read from public/brand/anaadi-ecofutures-logo-original.png.
 """
 
@@ -24,18 +21,8 @@ ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "assets" / "images"
 
 # (source file, output name, crop box (left, top, right, bottom))
-SAREE_CROPS = [
-    # Full sarees: trimmed to remove the floor, feet and neighbouring sarees.
-    ("2.jpg", "saree-magenta-peacock-blue.jpg", (0, 250, 822, 1215)),
-    ("3.jpg", "saree-orange-peacock-blue.jpg", (0, 40, 835, 1205)),
-    ("4.jpg", "saree-ivory-magenta.jpg", (0, 0, 1280, 960)),
-    ("5.jpg", "saree-coral-peacock-blue.jpg", (0, 70, 860, 1250)),
-    # Pallu details.
-    ("2.jpg", "detail-magenta-pallu.jpg", (60, 560, 560, 960)),
-    ("3.jpg", "detail-orange-pallu.jpg", (40, 360, 600, 808)),
-    ("4.jpg", "detail-ivory-pallu.jpg", (360, 90, 1120, 560)),
-    ("5.jpg", "detail-coral-pallu.jpg", (60, 380, 600, 812)),
-]
+# Saree images are produced by scripts/make-storefront.py.
+SAREE_CROPS: list = []
 
 # TEMPORARY: concept imagery cropped from the approved mockup. Replace with
 # approved photographs before launch (see README, "Assets to replace").

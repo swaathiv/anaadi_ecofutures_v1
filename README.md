@@ -193,9 +193,12 @@ under `prefers-reduced-motion` it is shown immediately.
 - Fabric section (Handloom Cotton, Silk-Cotton, Silk) uses a drawn thread
   study (`FabricSwatch`) because no fabric-specific photographs were
   supplied. Supply one photograph per fabric.
-- Saree photographs are the four supplied photos, cropped to remove the floor
-  and neighbouring sarees; colours and patterns are untouched. Higher
-  resolution or studio photographs would improve the collection.
+- Saree images are the four supplied photos turned into storefront shots by
+  `scripts/make-storefront.py`: the saree is cut out, leftover table is
+  removed, and it is placed on a plain ivory backdrop with a soft shadow
+  (the ivory saree is also rotated upright). Colours and weave are not
+  altered. Re-run it (instructions in the script) if the source photos
+  change. Studio photographs would still be sharper.
 - The logo is the original file (`public/brand/…-original.png`), padding
   trimmed only. It is lime and yellow on a green tile. The mockup shows a
   green-on-ivory version; that version does not exist as a file, and per the
